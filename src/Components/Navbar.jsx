@@ -4,11 +4,14 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="bg-[#121212] shadow-lg shadow-orange-500 hover:shadow-white">
+    <nav className="bg-[#121212] shadow-lg shadow-orange-500 hover:shadow-white transition-shadow duration-300 ease-in-out">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0">
-            <a href="/" className="text-white text-xl font-bold hover:text-orange-500">
+            <a
+              href="/"
+              className="text-white text-xl font-bold hover:text-orange-500 transition-colors duration-300 ease-in-out"
+            >
               DHARANEESH PORTFOLIO
             </a>
           </div>
@@ -16,12 +19,11 @@ const Navbar = () => {
             <button
               onClick={() => setIsOpen(!isOpen)}
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-white"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-white transition-all duration-300"
               aria-controls="mobile-menu"
               aria-expanded={isOpen ? 'true' : 'false'}
             >
               <span className="sr-only">Open main menu</span>
-              {/* Icon for menu open/close */}
               <svg
                 className="h-6 w-6"
                 xmlns="http://www.w3.org/2000/svg"
@@ -54,9 +56,10 @@ const Navbar = () => {
               <a
                 key={item}
                 href={`/${item.replace(' ', '').toLowerCase()}`}
-                className="text-white hover:text-orange-500 text-md font-bold"
+                className="text-white hover:text-orange-500 text-md font-bold relative transition duration-300 ease-in-out group"
               >
                 {item}
+                <span className="absolute inset-x-0 -bottom-1 h-1 bg-orange-500 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"></span>
               </a>
             ))}
           </div>
@@ -70,8 +73,8 @@ const Navbar = () => {
               <a
                 key={item}
                 href={`/${item.replace(' ', '').toLowerCase()}`}
-                onClick={() => setIsOpen(false)} // Close menu on link click
-                className="block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-orange-500 hover:text-black"
+                onClick={() => setIsOpen(false)}
+                className="block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-orange-500 hover:text-black transition-all duration-300"
               >
                 {item}
               </a>

@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+*{
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
