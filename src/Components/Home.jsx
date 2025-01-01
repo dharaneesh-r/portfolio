@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import logogif from "../images/logo.gif";
 import Aboutme from "./Aboutme";
 import Skills from "./Skills";
+import Projects from "./Projects";
+import Contact from "./Contact";
 
 const Home = () => {
   return (
@@ -56,6 +58,12 @@ const Home = () => {
     </div>
     <div>
       <Skills />
+    </div>
+    <div>
+      <Projects />
+    </div>
+    <div>
+      <Contact />
     </div>
     </>
   );

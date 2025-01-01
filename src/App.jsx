@@ -3,6 +3,8 @@ import Home from "./Components/Home";
 import Navbar from "./Components/Navbar";
 import Aboutme from "./Components/Aboutme";
 import Skills from "./Components/Skills";
+import Projects from "./Components/Projects";
+import Contact from "./Components/Contact";
 
 const App = () => {
   return (
@@ -15,6 +17,8 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/aboutme" element={<Aboutme />} />
           <Route path="/skills" element={<Skills />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </div>
     </div>

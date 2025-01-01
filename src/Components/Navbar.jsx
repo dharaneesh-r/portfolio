@@ -67,14 +67,14 @@ const Navbar = () => {
       </div>
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="sm:hidden" id="mobile-menu">
-          <div className="px-2 pt-2 pb-3 space-y-1">
+        <div className="sm:hidden fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center" id="mobile-menu">
+          <div className="bg-[#121212] w-full max-w-xs px-6 py-4 space-y-4 rounded-md">
             {['ABOUT ME', 'SKILLS', 'PROJECTS', 'CONTACT'].map((item) => (
               <a
                 key={item}
                 href={`/${item.replace(' ', '').toLowerCase()}`}
                 onClick={() => setIsOpen(false)}
-                className="block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-orange-500 hover:text-black transition-all duration-300"
+                className="block px-3 py-2 rounded-md text-lg font-bold text-white hover:bg-orange-500 hover:text-black transition-all duration-300"
               >
                 {item}
               </a>
