@@ -1,245 +1,65 @@
-import { motion } from "framer-motion";
+import { useEffect } from "react";
+import { gsap } from "gsap";
 
 const Skills = () => {
-  const cardVariants = {
-    initial: { opacity: 0, x: -100 },
-    animate: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: 100 },
-  };
+  useEffect(() => {
+    // Title animation
+    gsap.fromTo(
+      ".title",
+      { opacity: 0, y: -50 },
+      { opacity: 1, y: 0, duration: 1.2, ease: "power2.out" }
+    );
+
+    // Card animations
+    gsap.fromTo(
+      ".skill-card",
+      { opacity: 0, y: 100 },
+      { opacity: 1, y: 0, stagger: 0.2, duration: 1, ease: "power2.out" }
+    );
+  }, []);
+
+  const skills = [
+    { name: "HTML", img: "https://cdn.worldvectorlogo.com/logos/html-1.svg" },
+    { name: "CSS", img: "https://cdn.worldvectorlogo.com/logos/css-3.svg" },
+    { name: "JavaScript", img: "https://cdn.worldvectorlogo.com/logos/javascript-1.svg" },
+    { name: "React.js", img: "https://cdn.worldvectorlogo.com/logos/react-2.svg" },
+    { name: "Next.js", img: "https://upload.wikimedia.org/wikipedia/commons/8/8e/Nextjs-logo.svg" }, // Updated
+    { name: "Node.js", img: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Node.js_logo.svg" },
+    { name: "Express.js", img: "https://cdn.worldvectorlogo.com/logos/express-109.svg" },
+    { name: "MongoDB", img: "https://cdn.worldvectorlogo.com/logos/mongodb-icon-1.svg" },
+    { name: "Firebase", img: "https://cdn.worldvectorlogo.com/logos/firebase-1.svg" },
+    { name: "TailwindCSS", img: "https://cdn.worldvectorlogo.com/logos/tailwind-css-2.svg" },
+    { name: "Github", img: "https://cdn.worldvectorlogo.com/logos/github-icon-1.svg" },
+    { name: "Postman", img: "https://cdn.worldvectorlogo.com/logos/postman.svg" },
+    { name: "Kubernetes", img: "https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg" }, // Updated
+    { name: "Docker", img: "https://cdn.worldvectorlogo.com/logos/docker.svg" },
+    { name: "AWS", img: "https://cdn.worldvectorlogo.com/logos/aws-2.svg" },
+  ];
 
   return (
     <div className="flex flex-col items-center justify-center h-auto bg-[#121212]">
       {/* Title */}
-      <motion.h1
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-        className="text-slate-400 text-4xl md:text-5xl lg:text-6xl font-extrabold mb-10"
-      >
+      <h1 className="title text-slate-400 text-4xl md:text-5xl lg:text-6xl font-extrabold mb-10">
         MY SKILLS
-      </motion.h1>
+      </h1>
 
       {/* Skill Cards */}
-      <div className="flex flex-wrap justify-center gap-10">
-        {/* Skill 1: HTML */}
-        <motion.div
-          className="bg-gray-800 p-8 w-56 rounded-lg shadow-lg flex flex-col justify-center items-center transition-all duration-300 hover:scale-110 hover:bg-[#2e2e2e] hover:shadow-xl"
-          variants={cardVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={{ duration: 0.8 }}
-        >
-          <img
-            src="https://imgs.search.brave.com/e3lg83hyaKQTnOW7RZrrZjY2VgqFnToFbNKFfkV9PxU/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/d29ybGR2ZWN0b3Js/b2dvLmNvbS9sb2dv/cy9odG1sLTEuc3Zn"
-            width={50}
-            height={50}
-            alt="HTML"
-            className="mx-auto mb-4 transition-all duration-300 hover:scale-125"
-          />
-          <div className="text-white text-xl font-semibold">HTML</div>
-        </motion.div>
-
-        {/* Skill 2: CSS */}
-        <motion.div
-          className="bg-gray-800 p-8 w-56 rounded-lg shadow-lg flex flex-col justify-center items-center transition-all duration-300 hover:scale-110 hover:bg-[#2e2e2e] hover:shadow-xl"
-          variants={cardVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          <img
-            src="https://imgs.search.brave.com/aEGiTSo22dl3ju1IuSx7-Ex0GTyZ0ELtoLb2u8BWqBY/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YTIuZGV2LnRvL2R5/bmFtaWMvaW1hZ2Uv/d2lkdGg9ODAwLGhl/aWdodD0sZml0PXNj/YWxlLWRvd24sZ3Jh/dml0eT1hdXRvLGZv/cm1hdD1hdXRvL2h0/dHBzOi8vZGV2LXRv/LXVwbG9hZHMuczMu/YW1hem9uYXdzLmNv/bS91cGxvYWRzL2Fy/dGljbGVzLzdqMzUz/djh4ZTFoODYxdWM1/aTUzLnBuZw"
-            width={50}
-            height={50}
-            alt="CSS"
-            className="mx-auto mb-4 transition-all duration-300 hover:scale-125"
-          />
-          <div className="text-white text-xl font-semibold">CSS</div>
-        </motion.div>
-
-        <motion.div
-          className="bg-gray-800 p-8 w-56 rounded-lg shadow-lg flex flex-col justify-center items-center transition-all duration-300 hover:scale-110 hover:bg-[#2e2e2e] hover:shadow-xl"
-          variants={cardVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          <img
-            src="https://imgs.search.brave.com/WNxGnfQEvbgOy-66HgDZiPdK5ARVsvzhVQOvpcBelos/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/d29ybGR2ZWN0b3Js/b2dvLmNvbS9sb2dv/cy90YWlsd2luZC1j/c3MtMi5zdmc"
-            width={50}
-            height={50}
-            alt="React.js"
-            className="mx-auto mb-4 transition-all duration-300 hover:scale-125"
-          />
-          <div className="text-white text-xl font-semibold">TailwindCSS</div>
-        </motion.div>
-
-        {/* Skill 3: JavaScript */}
-        <motion.div
-          className="bg-gray-800 p-8 w-56 rounded-lg shadow-lg flex flex-col justify-center items-center transition-all duration-300 hover:scale-110 hover:bg-[#2e2e2e] hover:shadow-xl"
-          variants={cardVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          <img
-            src="https://imgs.search.brave.com/1r9jZFaLjOks3DS7KJ_K_F4ihnHLzWUKorG3ATyOUJY/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9zZWVr/bG9nby5jb20vaW1h/Z2VzL0ovamF2YXNj/cmlwdC1qcy1sb2dv/LTI5NDk3MDE3MDIt/c2Vla2xvZ28uY29t/LnBuZw"
-            width={50}
-            height={50}
-            alt="JavaScript"
-            className="mx-auto mb-4 transition-all duration-300 hover:scale-125"
-          />
-          <div className="text-white text-xl font-semibold">JavaScript</div>
-        </motion.div>
-
-        {/* Skill 4: React */}
-        <motion.div
-          className="bg-gray-800 p-8 w-56 rounded-lg shadow-lg flex flex-col justify-center items-center transition-all duration-300 hover:scale-110 hover:bg-[#2e2e2e] hover:shadow-xl"
-          variants={cardVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          <img
-            src="https://imgs.search.brave.com/9vKTcCIDDozQMYqmROSq7hb9MEbNZjl7SDPlkheHaG0/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9sb2dv/cy1kb3dubG9hZC5j/b20vd3AtY29udGVu/dC91cGxvYWRzLzIw/MTYvMDkvUmVhY3Rf/bG9nb19sb2dvdHlw/ZV9lbWJsZW0tNzAw/eDYyNi5wbmc"
-            width={50}
-            height={50}
-            alt="React.js"
-            className="mx-auto mb-4 transition-all duration-300 hover:scale-125"
-          />
-          <div className="text-white text-xl font-semibold">React.js</div>
-        </motion.div>
-
-        <motion.div
-          className="bg-gray-800 p-8 w-56 rounded-lg shadow-lg flex flex-col justify-center items-center transition-all duration-300 hover:scale-110 hover:bg-[#2e2e2e] hover:shadow-xl"
-          variants={cardVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          <img
-            src="https://imgs.search.brave.com/jVHeQcjIIhr4DryzbcXOAJz-NROqDmestlvetAi8xEo/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/dmVjdG9ybG9nby56/b25lL2xvZ29zL25l/eHRqcy9uZXh0anMt/aWNvbi5zdmc"
-            width={50}
-            height={50}
-            alt="Next.js"
-            className="mx-auto mb-4 transition-all duration-300 hover:scale-125"
-          />
-          <div className="text-white text-xl font-semibold">Next.js</div>
-        </motion.div>
-
-        <motion.div
-          className="bg-gray-800 p-8 w-56 rounded-lg shadow-lg flex flex-col justify-center items-center transition-all duration-300 hover:scale-110 hover:bg-[#2e2e2e] hover:shadow-xl"
-          variants={cardVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          <img
-            src="https://imgs.search.brave.com/sOv_5GQnC11NvZdTD2kCJi1LPmCsTBu48lANSXl2H8M/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9hc3Nl/dHMuc3RpY2twbmcu/Y29tL2ltYWdlcy81/ODQ3ZjQwZWNlZjEw/MTRjMGI1ZTQ4OGEu/cG5n"
-            width={50}
-            height={50}
-            alt="firebase"
-            className="mx-auto mb-4 transition-all duration-300 hover:scale-125"
-          />
-          <div className="text-white text-xl font-semibold">Firebase</div>
-        </motion.div>
-
-        <motion.div
-          className="bg-gray-800 p-8 w-56 rounded-lg shadow-lg flex flex-col justify-center items-center transition-all duration-300 hover:scale-110 hover:bg-[#2e2e2e] hover:shadow-xl"
-          variants={cardVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          <img
-            src="https://imgs.search.brave.com/9csQs7n45LOxCX5IKDCmwlJH7UaNxfcbjhQ8eru1tE4/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvY29tbW9ucy8y/LzI0L0dpdGh1Yl9s/b2dvX3N2Zy5zdmc"
-            width={50}
-            height={50}
-            alt="Github"
-            className="mx-auto mb-4 transition-all duration-300 hover:scale-125"
-          />
-          <div className="text-white text-xl font-semibold">Github</div>
-        </motion.div>
-
-        <motion.div
-          className="bg-gray-800 p-8 w-56 rounded-lg shadow-lg flex flex-col justify-center items-center transition-all duration-300 hover:scale-110 hover:bg-[#2e2e2e] hover:shadow-xl"
-          variants={cardVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          <img
-            src="https://imgs.search.brave.com/G4W4ekbS31fQcq7GkHDgmKogV4VQ6iafr52f_r53kuc/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9zZWVr/bG9nby5jb20vaW1h/Z2VzL1AvcG9zdG1h/bi1hcGktcGxhdGZv/cm0tbG9nby1ENkI4/QUI5QjBELXNlZWts/b2dvLmNvbS5wbmc"
-            width={50}
-            height={50}
-            alt="postman"
-            className="mx-auto mb-4 transition-all duration-300 hover:scale-125"
-          />
-          <div className="text-white text-xl font-semibold">Postman</div>
-        </motion.div>
-
-        <motion.div
-          className="bg-gray-800 p-8 w-56 rounded-lg shadow-lg flex flex-col justify-center items-center transition-all duration-300 hover:scale-110 hover:bg-[#2e2e2e] hover:shadow-xl"
-          variants={cardVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/d/d9/Node.js_logo.svg"
-            width={50}
-            height={50}
-            alt="Node.js"
-            className="mx-auto mb-4 transition-all duration-300 hover:scale-125"
-          />
-          <div className="text-white text-xl font-semibold">Node.js</div>
-        </motion.div>
-
-        <motion.div
-          className="bg-gray-800 p-8 w-56 rounded-lg shadow-lg flex flex-col justify-center items-center transition-all duration-300 hover:scale-110 hover:bg-[#2e2e2e] hover:shadow-xl"
-          variants={cardVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          <img
-            src="https://imgs.search.brave.com/Nl3NY_blqManrX5mz2JNxeyXGmsAe8bD1lSVtHDKMRw/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9jbG91/ZC5naXRodWJ1c2Vy/Y29udGVudC5jb20v/YXNzZXRzLzk1MDEx/Mi8xNDA4MDc0MC84/ZjkyMDM3YS1mNTI0/LTExZTUtOGM1Mi0y/N2E5YWM2M2FmNTAu/cG5n"
-            width={50}
-            height={50}
-            alt="express.js"
-            className="mx-auto mb-4 transition-all duration-300 hover:scale-125"
-          />
-          <div className="text-white text-xl font-semibold">Express.js</div>
-        </motion.div>
-
-        <motion.div
-          className="bg-gray-800 p-8 w-56 rounded-lg shadow-lg flex flex-col justify-center items-center transition-all duration-300 hover:scale-110 hover:bg-[#2e2e2e] hover:shadow-xl"
-          variants={cardVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          <img
-            src="https://imgs.search.brave.com/A5fgk_PDeP_UtAwayg6FF0hKArvi-Lh0iZGHNsT-wlA/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9wbHVz/cG5nLmNvbS9pbWct/cG5nL2xvZ28tbW9u/Z29kYi1wbmctZmls/ZS1tb25nb2RiLWxv/Z28tc3ZnLTEwMjQu/cG5n"
-            width={70}
-            height={60}
-            alt="Mongodb"
-            className="mx-auto mb-4 transition-all duration-300 hover:scale-125"
-          />
-          <div className="text-white text-xl font-semibold">MongoDB</div>
-        </motion.div>
+      <div className="flex flex-wrap justify-center gap-10 m-1">
+        {skills.map((skill, index) => (
+          <div
+            key={index}
+            className="skill-card bg-gray-800 p-8 w-56 rounded-lg shadow-lg flex flex-col justify-center items-center transition-all duration-300 hover:scale-110 hover:bg-[#2e2e2e] hover:shadow-xl"
+          >
+            <img
+              src={skill.img}
+              alt={skill.name}
+              width={50}
+              height={50}
+              className="mx-auto mb-4 transition-all duration-300 hover:scale-125"
+            />
+            <div className="text-white text-xl font-semibold">{skill.name}</div>
+          </div>
+        ))}
       </div>
     </div>
   );
