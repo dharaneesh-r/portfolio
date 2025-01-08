@@ -38,7 +38,7 @@ const Home = () => {
         <div className="text-center md:text-left md:w-1/2">
           {/* Main Title */}
           <div
-            className="main-title text-orange-500 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold relative"
+            className="main-title text-orange-500 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold relative animate-bounce hover:animate-ping"
             style={{
               textShadow: `
                 1px 1px 2px rgba(255, 255, 255, 0.9),

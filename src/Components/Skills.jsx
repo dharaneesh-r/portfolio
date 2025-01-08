@@ -16,6 +16,30 @@ const Skills = () => {
       { opacity: 0, y: 100 },
       { opacity: 1, y: 0, stagger: 0.2, duration: 1, ease: "power2.out" }
     );
+
+    // Hover animations for cards
+    const cards = document.querySelectorAll(".skill-card");
+    cards.forEach((card) => {
+      card.addEventListener("mouseenter", () => {
+        gsap.to(card, {
+          scale: 1.2,
+          rotate: 5,
+          duration: 0.1,
+          ease: "power1.out",
+          boxShadow: "0px 10px 10px rgba(255, 165, 0, 0.8)",
+        });
+      });
+
+      card.addEventListener("mouseleave", () => {
+        gsap.to(card, {
+          scale: 1,
+          rotate: 0,
+          duration: 0.1,
+          ease: "power1.inOut",
+          boxShadow: "0px 5px 10px rgba(0, 0, 0, 0.3)",
+        });
+      });
+    });
   }, []);
 
   const skills = [
@@ -23,7 +47,7 @@ const Skills = () => {
     { name: "CSS", img: "https://cdn.worldvectorlogo.com/logos/css-3.svg" },
     { name: "JavaScript", img: "https://cdn.worldvectorlogo.com/logos/javascript-1.svg" },
     { name: "React.js", img: "https://cdn.worldvectorlogo.com/logos/react-2.svg" },
-    { name: "Next.js", img: "https://upload.wikimedia.org/wikipedia/commons/8/8e/Nextjs-logo.svg" }, // Updated
+    { name: "Next.js", img: "https://upload.wikimedia.org/wikipedia/commons/8/8e/Nextjs-logo.svg" },
     { name: "Node.js", img: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Node.js_logo.svg" },
     { name: "Express.js", img: "https://cdn.worldvectorlogo.com/logos/express-109.svg" },
     { name: "MongoDB", img: "https://cdn.worldvectorlogo.com/logos/mongodb-icon-1.svg" },
@@ -31,7 +55,7 @@ const Skills = () => {
     { name: "TailwindCSS", img: "https://cdn.worldvectorlogo.com/logos/tailwind-css-2.svg" },
     { name: "Github", img: "https://cdn.worldvectorlogo.com/logos/github-icon-1.svg" },
     { name: "Postman", img: "https://cdn.worldvectorlogo.com/logos/postman.svg" },
-    { name: "Kubernetes", img: "https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg" }, // Updated
+    { name: "Kubernetes", img: "https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg" },
     { name: "Docker", img: "https://cdn.worldvectorlogo.com/logos/docker.svg" },
     { name: "AWS", img: "https://cdn.worldvectorlogo.com/logos/aws-2.svg" },
   ];
@@ -48,7 +72,7 @@ const Skills = () => {
         {skills.map((skill, index) => (
           <div
             key={index}
-            className="skill-card bg-gray-800 p-8 w-56 rounded-lg shadow-lg flex flex-col justify-center items-center transition-all duration-300 hover:scale-110 hover:bg-[#2e2e2e] hover:shadow-xl"
+            className="skill-card bg-gray-800 p-8 w-56 rounded-lg shadow-lg flex flex-col justify-center items-center transition-all duration-300 hover:bg-[#2e2e2e]"
           >
             <img
               src={skill.img}
