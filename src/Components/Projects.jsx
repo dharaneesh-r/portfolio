@@ -30,16 +30,16 @@ const Projects = () => {
 
   const projectData = [
     {
-      title: "INFORMATIVE JOURNAL",
+      title: "Newwss",
       description:
-        "Developed Informative Journal, a news application using Next.js, Node.js with Express.js, and MongoDB for scalability and performance. Features include real-time categorized news, dynamic routing, and seamless API integration. Designed a user-friendly interface for efficient navigation and smooth user experience.",
+        "Developed Newwss, a news application using Next.js, Node.js with Express.js, and MongoDB for scalability and performance. Features include real-time categorized news, dynamic routing, and seamless API integration. Designed a user-friendly interface for efficient navigation and smooth user experience.",
       techStack: [
         { icon: <FaNodeJs key="nodejs" className="tech-icon text-green-600 text-5xl shadow-2xl hover:scale-110 transition-all duration-300" />, name: "Node.js" },
         { icon: <SiTailwindcss key="tailwind" className="tech-icon text-teal-400 text-5xl shadow-2xl hover:scale-110 transition-all duration-300" />, name: "TailwindCSS" },
         { icon: <SiMongodb key="mongodb" className="tech-icon text-green-800 text-5xl shadow-2xl hover:scale-110 transition-all duration-300" />, name: "MongoDB" },
         { icon: <SiFirebase key="firebase" className="tech-icon text-yellow-600 text-5xl shadow-2xl hover:scale-110 transition-all duration-300" />, name: "Firebase" },
       ],
-      link: "https://informativejournal.vercel.app/",
+      link: "https://www.newwss.com/",
     },
     {
       title: "CRYPTO MARKETPLACE",
