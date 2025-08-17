@@ -40,6 +40,17 @@ const Projects = () => {
         { icon: <SiFirebase key="firebase" className="tech-icon text-yellow-600 text-5xl shadow-2xl hover:scale-110 transition-all duration-300" />, name: "Firebase" },
       ],
       link: "https://www.newwss.com/",
+    },{
+      title: "AuditPro",
+      description:
+        "AuditPro is a web-based auditing and compliance platform built on the MERN stack, offering seamless management of GST, tax, and regulatory services. With a scalable architecture and responsive React UI, it delivers efficient compliance tracking and client-friendly dashboards.",
+      techStack: [
+        { icon: <FaNodeJs key="nodejs" className="tech-icon text-green-600 text-5xl shadow-2xl hover:scale-110 transition-all duration-300" />, name: "Node.js" },
+        { icon: <SiTailwindcss key="tailwind" className="tech-icon text-teal-400 text-5xl shadow-2xl hover:scale-110 transition-all duration-300" />, name: "TailwindCSS" },
+        { icon: <SiMongodb key="mongodb" className="tech-icon text-green-800 text-5xl shadow-2xl hover:scale-110 transition-all duration-300" />, name: "MongoDB" },
+        { icon: <SiFirebase key="firebase" className="tech-icon text-yellow-600 text-5xl shadow-2xl hover:scale-110 transition-all duration-300" />, name: "Firebase" },
+      ],
+      link: "https://auditpro-mauve.vercel.app/",
     },
     {
       title: "CRYPTO MARKETPLACE",
@@ -52,12 +63,22 @@ const Projects = () => {
       link: "https://crypto-marketplace-ten.vercel.app/",
     },
     {
+      title: "MOVIE BOOKING APPLICATION",
+      description : "The Movie Booking Application is a fully responsive, front-end web app designed to simulate a seamless cinema ticket booking experience. Built entirely with React, styled using Tailwind CSS, and powered by JSON data, the app showcases smooth UI interactions without the need for a backend server.",
+      techStack: [
+        { icon: <FaReact key="react" className="tech-icon text-cyan-500 text-5xl shadow-2xl hover:scale-110 transition-all duration-300" />, name: "React" },
+        { icon: <SiTailwindcss key="tailwind" className="tech-icon text-teal-400 text-5xl shadow-2xl hover:scale-110 transition-all duration-300" />, name: "TailwindCSS" },
+      ],
+      link: "https://movie-booking-application-eight.vercel.app/",
+
+    },
+    {
       title: "TODO APPLICATION",
       description:
         "Developed a TO-DO app using React.js and Tailwind CSS to create a simple, interactive task management tool.",
       techStack: [
         { icon: <FaReact key="react" className="tech-icon text-cyan-500 text-5xl shadow-2xl hover:scale-110 transition-all duration-300" />, name: "React" },
-        { icon: <SiTailwindcss key="tailwind" className="tech-icon text-teal-400 text-5xl shadow-2xl hover:scale-110 transition-all duration-300" />, name: "TailwindCSS" },
+        { icon: <SiTailwindcss key="tailwind" className="tech-icon text-teal-400 text-5xl shadow-2xl hover:scale-110 transition-all duration-300" />, name: "TailwindCSS" }
       ],
       link: "https://to-do-application-six-eta.vercel.app/",
     },
