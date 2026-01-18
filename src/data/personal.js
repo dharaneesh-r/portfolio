@@ -59,8 +59,8 @@ export const personalInfo = {
     ],
 
     resume: {
-        url: "/resume.pdf",
-        filename: "Dharaneesh_Resume.pdf"
+        url: "/Dharaneesh.pdf",
+        filename: "Dharaneesh.pdf"
     }
 };
 
