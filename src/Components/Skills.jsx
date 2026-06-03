@@ -1,270 +1,530 @@
+/**
+ * Skills.jsx — Enhanced Skills page
+ * Matches the editorial design language of Aboutme.jsx
+ */
+
 import { useEffect, useState, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { skillCategories } from "../data/skills";
-import { FaCode, FaServer, FaCloud, FaTools, FaStar, FaFire, FaTrophy, FaChartLine } from "react-icons/fa";
+import { FaCode, FaServer, FaCloud, FaTools } from "react-icons/fa";
+import { useReducedMotion } from "../context/ReducedMotionContext";
+import { EASE, DUR } from "../motion/tokens";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const categoryIcons = {
+// ── Scramble heading (copied from Aboutme.jsx) ────────────────────────
+const ScrambleHeading = ({ children, className = "", delay = 0 }) => {
+  const elRef = useRef(null);
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#@!$";
+  const TICK = 36; const DUR_MS = 400; const STAG = 45;
+  useEffect(() => {
+    const el = elRef.current;
+    if (!el) return;
+    const original = el.textContent;
+    const run = () => {
+      const now = Date.now();
+      const starts = original.split("").map((_, i) => now + i * STAG + delay);
+      const settled = original.split("").map(() => false);
+      const iv = setInterval(() => {
+        const t = Date.now(); let all = true;
+        const result = original.split("").map((ch, i) => {
+          if (ch === " ") return " ";
+          if (settled[i]) return ch;
+          if (t < starts[i]) { all = false; return ch; }
+          const elapsed = t - starts[i];
+          if (elapsed >= DUR_MS) { settled[i] = true; return ch; }
+          all = false;
+          return chars[Math.floor(Math.random() * chars.length)];
+        });
+        el.textContent = result.join("");
+        if (all) clearInterval(iv);
+      }, TICK);
+      return iv;
+    };
+    let iv;
+    const st = ScrollTrigger.create({ trigger: el, start: "top 88%", once: true, onEnter: () => { iv = run(); } });
+    return () => { st.kill(); clearInterval(iv); };
+  }, []);
+  return <h2 ref={elRef} className={className}>{children}</h2>;
+};
+
+// ── Tech icon metadata ────────────────────────────────────────────────
+const TECH_META = {
+  "HTML": { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg", color: "#e34f26" },
+  "CSS": { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg", color: "#1572b6" },
+  "JavaScript": { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg", color: "#f7df1e" },
+  "React.js": { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg", color: "#61dafb" },
+  "Next.js": { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg", color: "#e2e8f0", invert: true },
+  "TailwindCSS": { icon: "https://cdn.simpleicons.org/tailwindcss/38bdf8", color: "#38bdf8" },
+  "Node.js": { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg", color: "#68a063" },
+  "Express.js": { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg", color: "#aaaaaa", invert: true },
+  "MongoDB": { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg", color: "#4db33d" },
+  "Firebase": { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg", color: "#ffca28" },
+  "AWS": { icon: "https://cdn.simpleicons.org/amazonaws/ff9900", color: "#ff9900" },
+  "Docker": { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg", color: "#2496ed" },
+  "Kubernetes": { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg", color: "#326ce5" },
+  "Git/GitHub": { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg", color: "#f34f29" },
+  "Postman": { icon: "https://cdn.simpleicons.org/postman/ef5b25", color: "#ef5b25" },
+  "GSAP": { icon: "https://cdn.worldvectorlogo.com/logos/gsap-greensock.svg", color: "#88ce02" },
+};
+
+// ── Circular progress ring ────────────────────────────────────────────
+const CircleProgress = ({ pct, label, icon: Icon, color }) => {
+  const circleRef = useRef(null);
+  const R = 54; const C = 2 * Math.PI * R;
+  useEffect(() => {
+    const el = circleRef.current;
+    if (!el) return;
+    const st = ScrollTrigger.create({
+      trigger: el, start: "top 85%", once: true,
+      onEnter: () => gsap.fromTo(el,
+        { strokeDashoffset: C },
+        { strokeDashoffset: C - (pct / 100) * C, duration: 1.6, ease: "power2.out" }
+      ),
+    });
+    return () => st.kill();
+  }, [pct]);
+  return (
+    <div className="text-center group">
+      <div className="relative w-32 h-32 mx-auto mb-4">
+        <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r={R} fill="none" stroke="rgba(249,115,22,0.1)" strokeWidth="8" />
+          <circle ref={circleRef} cx="60" cy="60" r={R} fill="none" stroke={color || "#f97316"} strokeWidth="8"
+            strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C} />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <Icon className="text-2xl text-primary-500 mb-1" />
+          <span className="font-heading font-black text-lg text-white">{pct}%</span>
+        </div>
+      </div>
+      <p className="text-white/70 font-semibold text-sm">{label}</p>
+    </div>
+  );
+};
+
+// ── Category config ───────────────────────────────────────────────────
+const CATEGORY_ICONS = {
   frontend: FaCode,
   backend: FaServer,
   devops: FaCloud,
-  tools: FaTools
+  tools: FaTools,
 };
 
-const Skills = () => {
-  const [activeCategory, setActiveCategory] = useState("frontend");
-  const [hoveredSkill, setHoveredSkill] = useState(null);
-  const skillsGridRef = useRef(null);
-  const radarRef = useRef(null);
+// ── Skill Card (extracted to keep re-render scope clean) ─────────────
+const SkillCard = ({ skill, meta, profLabel, profColor }) => {
+  const iconRef = useRef(null);
+  const [imgErr, setImgErr] = useState(false);
 
-  useEffect(() => {
-    // No entrance animations - everything shows immediately
-  }, []);
+  const iconUrl = meta.icon || skill.icon;
 
-  // Animate skills when category changes
-  useEffect(() => {
-    if (skillsGridRef.current) {
-      const cards = skillsGridRef.current.querySelectorAll(".skill-card");
+  const onMove = (e) => {
+    const el = iconRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const cx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    const cy = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+    gsap.to(el, {
+      rotateY: cx * 22,
+      rotateX: -cy * 22,
+      scale: 1.15,
+      duration: 0.25,
+      ease: "power2.out",
+      transformPerspective: 500,
+      transformOrigin: "center center",
+    });
+  };
 
-      // Only animate progress bars
-      cards.forEach((card) => {
-        const progressBar = card.querySelector(".progress-fill");
-        const level = progressBar?.getAttribute("data-level");
-        if (progressBar && level) {
-          gsap.fromTo(
-            progressBar,
-            { width: "0%" },
-            { width: `${level}%`, duration: 1, ease: "power2.out" }
-          );
-        }
-      });
-    }
-  }, [activeCategory]);
-
-  const currentCategory = skillCategories[activeCategory];
-  const totalSkills = Object.values(skillCategories).reduce((acc, cat) => acc + cat.skills.length, 0);
-  const avgProficiency = Math.round(
-    Object.values(skillCategories)
-      .flatMap(cat => cat.skills)
-      .reduce((acc, skill) => acc + skill.level, 0) / totalSkills
-  );
+  const onLeave = () => {
+    if (!iconRef.current) return;
+    gsap.to(iconRef.current, {
+      rotateY: 0, rotateX: 0, scale: 1,
+      duration: 0.6,
+      ease: "elastic.out(1, 0.45)",
+    });
+  };
 
   return (
-    <div className="min-h-screen bg-dark-900 py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-primary-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(249,115,22,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(249,115,22,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
-      </div>
+    <div className="skills-card group relative border border-white/5 rounded-2xl p-6 bg-white/[0.02] hover:border-primary-500/20 transition-colors duration-300 overflow-hidden">
+      {/* Subtle glow on hover */}
+      <div
+        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{ background: `radial-gradient(circle at 30% 40%, ${meta.color}08 0%, transparent 70%)` }}
+      />
 
-      <div className="max-w-7xl mx-auto relative z-10">
-        {/* Hero Section */}
-        <div className="skills-hero text-center mb-20">
-          <h1 className="font-heading font-extrabold text-5xl sm:text-6xl md:text-7xl mb-6">
-            <span className="gradient-text">Technical Arsenal</span>
-          </h1>
-          <p className="text-gray-300 text-xl sm:text-2xl max-w-3xl mx-auto leading-relaxed mb-12">
-            A comprehensive showcase of my <span className="text-primary-500 font-bold">technical expertise</span> and <span className="text-primary-500 font-bold">proficiency levels</span>
-          </p>
-
-          {/* Quick Stats */}
-          <div className="stats-section flex flex-wrap justify-center gap-6 mb-16">
-            <div className="stat-card glass-dark rounded-2xl px-8 py-6 border border-primary-500/30 hover:border-primary-500 transition-all group">
-              <div className="text-4xl font-bold text-primary-500 mb-2 group-hover:scale-110 transition-transform">{totalSkills}+</div>
-              <div className="text-gray-400 text-sm">Technologies</div>
-            </div>
-            <div className="stat-card glass-dark rounded-2xl px-8 py-6 border border-primary-500/30 hover:border-primary-500 transition-all group">
-              <div className="text-4xl font-bold text-primary-500 mb-2 group-hover:scale-110 transition-transform">{avgProficiency}%</div>
-              <div className="text-gray-400 text-sm">Avg Proficiency</div>
-            </div>
-            <div className="stat-card glass-dark rounded-2xl px-8 py-6 border border-primary-500/30 hover:border-primary-500 transition-all group">
-              <div className="text-4xl font-bold text-primary-500 mb-2 group-hover:scale-110 transition-transform">4</div>
-              <div className="text-gray-400 text-sm">Categories</div>
-            </div>
-            <div className="stat-card glass-dark rounded-2xl px-8 py-6 border border-primary-500/30 hover:border-primary-500 transition-all group">
-              <div className="text-4xl font-bold text-green-400 mb-2 group-hover:scale-110 transition-transform">1+</div>
-              <div className="text-gray-400 text-sm">Years Experience</div>
-            </div>
-          </div>
+      {/* Header row */}
+      <div className="flex items-start justify-between mb-5">
+        {/* 3D icon */}
+        <div
+          ref={iconRef}
+          onMouseMove={onMove}
+          onMouseLeave={onLeave}
+          className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 cursor-default"
+          style={{
+            background: `${meta.color}15`,
+            border: `1px solid ${meta.color}30`,
+            transformStyle: "preserve-3d",
+            willChange: "transform",
+          }}
+        >
+          {iconUrl && !imgErr ? (
+            <img
+              src={iconUrl}
+              alt={skill.name}
+              onError={() => setImgErr(true)}
+              className="w-7 h-7 object-contain"
+              style={{ filter: meta.invert ? "invert(1) brightness(0.85)" : "none" }}
+            />
+          ) : (
+            <span className="font-heading font-black text-xl" style={{ color: meta.color }}>
+              {skill.name[0]}
+            </span>
+          )}
         </div>
 
-        {/* Category Selection - Card Grid */}
-        <div className="categories-grid mb-16">
-          <h2 className="text-3xl font-heading font-bold text-white mb-8 text-center">Select Category</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {Object.entries(skillCategories).map(([key, category]) => {
-              const Icon = categoryIcons[key];
-              const isActive = activeCategory === key;
+        {/* Proficiency badge */}
+        <span
+          className="font-mono text-[10px] tracking-[0.2em] uppercase px-2.5 py-1 rounded-full"
+          style={{ color: profColor, backgroundColor: profColor + "18", border: `1px solid ${profColor}30` }}
+        >
+          {profLabel}
+        </span>
+      </div>
 
+      {/* Skill name */}
+      <h3 className="font-heading font-black text-2xl text-white mb-1 leading-tight">{skill.name}</h3>
+      {skill.description ? (
+        <p className="text-white/40 text-xs font-mono mb-5 leading-relaxed line-clamp-2">{skill.description}</p>
+      ) : (
+        <div className="mb-5" />
+      )}
+
+      {/* Progress bar */}
+      <div className="mb-5">
+        <div className="flex justify-between mb-1.5">
+          <span className="font-mono text-[10px] tracking-[0.2em] text-white/30 uppercase">Proficiency</span>
+          <span className="font-mono text-[10px] text-white/50">{skill.level}%</span>
+        </div>
+        <div className="h-1 w-full rounded-full bg-white/5 overflow-hidden">
+          <div
+            className="skills-progress-bar h-full rounded-full"
+            data-pct={skill.level}
+            style={{
+              width: "0%",
+              background: `linear-gradient(90deg, ${meta.color}80, ${meta.color})`,
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="flex gap-4 pt-4 border-t border-white/5">
+        <div>
+          <p className="font-mono text-[10px] tracking-[0.2em] text-white/25 uppercase mb-0.5">Exp</p>
+          <p className="font-heading font-black text-sm text-white/70">{skill.yearsExp}yr</p>
+        </div>
+        <div>
+          <p className="font-mono text-[10px] tracking-[0.2em] text-white/25 uppercase mb-0.5">Projects</p>
+          <p className="font-heading font-black text-sm text-white/70">{skill.projects}+</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Main Skills component ─────────────────────────────────────────────
+const Skills = () => {
+  const prefersReducedMotion = useReducedMotion();
+  const [activeCategory, setActiveCategory] = useState("frontend");
+
+  // Computed stats
+  const allSkillsFlat = Object.values(skillCategories).flatMap(c => c.skills);
+  const totalSkills = allSkillsFlat.length;
+  const avgProficiency = Math.round(allSkillsFlat.reduce((s, sk) => s + sk.level, 0) / totalSkills);
+  const totalCategories = Object.keys(skillCategories).length;
+
+  const stats = [
+    { value: totalSkills, suffix: "+", label: "Total Skills" },
+    { value: avgProficiency, suffix: "%", label: "Avg Proficiency" },
+    { value: totalCategories, suffix: "", label: "Categories" },
+    { value: "1yr", suffix: "+", label: "Experience" },
+  ];
+
+  // Hero animation on mount
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    gsap.from(".skills-hero-line", {
+      clipPath: "inset(0 0 100% 0)",
+      y: 80,
+      opacity: 0,
+      stagger: 0.18,
+      duration: 1.1,
+      ease: "back.out(1.7)",
+      delay: 0.1,
+    });
+  }, []);
+
+  // Stat cards — individual scroll triggers
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    gsap.utils.toArray(".skills-stat-card").forEach((el, i) => {
+      gsap.fromTo(el,
+        { y: 40, opacity: 0 },
+        {
+          scrollTrigger: { trigger: el, start: "top 85%", once: true },
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          delay: i * 0.1,
+          ease: "power3.out",
+        }
+      );
+    });
+  }, []);
+
+  // Category tab buttons — individual scroll triggers
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    gsap.utils.toArray(".skills-cat-btn").forEach((el, i) => {
+      gsap.fromTo(el,
+        { x: -30, opacity: 0 },
+        {
+          scrollTrigger: { trigger: el, start: "top 88%", once: true },
+          x: 0,
+          opacity: 1,
+          duration: 0.6,
+          delay: i * 0.08,
+          ease: "power3.out",
+        }
+      );
+    });
+  }, []);
+
+  // Skill cards — animate in when category changes
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    // Use RAF to ensure DOM has updated after state change
+    const raf = requestAnimationFrame(() => {
+      const cards = document.querySelectorAll(".skills-card");
+      gsap.utils.toArray(cards).forEach((el, i) => {
+        gsap.fromTo(el,
+          { y: 50, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.65,
+            delay: i * 0.06,
+            ease: "power3.out",
+          }
+        );
+        // Animate progress bar inside this card
+        const bar = el.querySelector(".skills-progress-bar");
+        if (bar) {
+          const target = bar.dataset.pct;
+          gsap.fromTo(bar, { width: "0%" }, { width: target + "%", duration: 1, ease: "power2.out", delay: i * 0.06 + 0.25 });
+        }
+      });
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [activeCategory]);
+
+  // Summary circles — individual scroll triggers
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    gsap.utils.toArray(".skills-summary-item").forEach((el, i) => {
+      gsap.fromTo(el,
+        { y: 40, opacity: 0 },
+        {
+          scrollTrigger: { trigger: el, start: "top 85%", once: true },
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          delay: i * 0.12,
+          ease: "power3.out",
+        }
+      );
+    });
+  }, []);
+
+  const currentCat = skillCategories[activeCategory];
+
+  const getProficiencyLabel = (level) => {
+    if (level >= 88) return { label: "Expert", color: "#22c55e" };
+    if (level >= 75) return { label: "Advanced", color: "#f97316" };
+    return { label: "Intermediate", color: "#3b82f6" };
+  };
+
+  const getCategoryAvg = (key) => {
+    const cat = skillCategories[key];
+    return Math.round(cat.skills.reduce((s, sk) => s + sk.level, 0) / cat.skills.length);
+  };
+
+  return (
+    <div className="min-h-screen" style={{ backgroundColor: "#0a0a0a" }}>
+
+      {/* ── HERO ───────────────────────────────────────────────────── */}
+      <section className="pt-24 pb-16 px-6 sm:px-10 lg:px-20 xl:px-28">
+        <div className="max-w-7xl mx-auto">
+
+          {/* Section label */}
+          <div className="overflow-hidden mb-8">
+            <p className="skills-hero-line font-mono text-[10px] tracking-[0.35em] text-primary-500/60 uppercase mb-2">
+              — Skills
+            </p>
+          </div>
+
+          {/* Hero title line 1 */}
+          <div className="overflow-hidden mb-3">
+            <h1
+              className="skills-hero-line font-heading font-black uppercase leading-none text-white"
+              style={{ fontSize: "clamp(52px, 9vw, 130px)" }}
+            >
+              TECHNICAL
+            </h1>
+          </div>
+
+          {/* Hero title line 2 */}
+          <div className="overflow-hidden mb-8">
+            <h1
+              className="skills-hero-line font-heading font-black uppercase leading-none"
+              style={{
+                fontSize: "clamp(52px, 9vw, 130px)",
+                WebkitTextStroke: "2px #f97316",
+                color: "transparent",
+              }}
+            >
+              ARSENAL.
+            </h1>
+          </div>
+
+          {/* Subtitle */}
+          <div className="overflow-hidden mb-14">
+            <p className="skills-hero-line text-white/50 text-lg font-mono max-w-xl">
+              Tools, frameworks, and technologies I craft with — refined through real-world projects.
+            </p>
+          </div>
+
+          {/* Stat cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {stats.map((stat, i) => (
+              <div
+                key={i}
+                className="skills-stat-card border border-white/5 rounded-2xl p-6 bg-white/[0.02] backdrop-blur-sm hover:border-primary-500/30 transition-colors duration-300"
+              >
+                <p className="font-heading font-black text-4xl text-white mb-1">
+                  {stat.value}
+                  <span className="text-primary-500">{stat.suffix}</span>
+                </p>
+                <p className="font-mono text-[10px] tracking-[0.25em] text-white/40 uppercase">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── DIVIDER ─────────────────────────────────────────────────── */}
+      <div className="px-6 sm:px-10 lg:px-20 xl:px-28">
+        <div className="max-w-7xl mx-auto border-t border-white/5" />
+      </div>
+
+      {/* ── CATEGORY TABS ───────────────────────────────────────────── */}
+      <section className="py-12 px-6 sm:px-10 lg:px-20 xl:px-28">
+        <div className="max-w-7xl mx-auto">
+          <p className="font-mono text-[10px] tracking-[0.35em] text-primary-500/60 uppercase mb-2">— 02</p>
+          <ScrambleHeading className="font-heading font-black text-3xl sm:text-4xl text-white mb-10 uppercase">
+            Choose Category
+          </ScrambleHeading>
+
+          <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
+            {Object.entries(skillCategories).map(([key, cat]) => {
+              const Icon = CATEGORY_ICONS[key];
+              const isActive = activeCategory === key;
+              const shortTitle = cat.title.replace(" Development", "").replace(" & Cloud", "");
               return (
                 <button
                   key={key}
                   onClick={() => setActiveCategory(key)}
-                  className={`category-card relative group ${isActive
-                    ? 'bg-gradient-to-br from-primary-500 to-primary-600 border-primary-400'
-                    : 'glass-dark border-primary-500/30 hover:border-primary-500'
-                    } rounded-2xl p-6 border-2 transition-all duration-300 text-left overflow-hidden ${isActive ? 'scale-105 shadow-2xl shadow-primary-500/50' : 'hover:scale-105'
-                    }`}
+                  className={`skills-cat-btn group flex items-center gap-3 px-6 py-4 rounded-xl border font-mono text-sm tracking-wider uppercase transition-all duration-300 ${
+                    isActive
+                      ? "border-primary-500 bg-primary-500/10 text-primary-500"
+                      : "border-white/10 bg-white/[0.02] text-white/50 hover:border-white/20 hover:text-white/80"
+                  }`}
                 >
-                  {/* Background Effect */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${isActive ? 'from-white/20 to-transparent' : 'from-primary-500/0 to-transparent group-hover:from-primary-500/10'
-                    } transition-all duration-300`}></div>
-
-                  <div className="relative z-10">
-                    <Icon className={`text-4xl mb-4 ${isActive ? 'text-white' : 'text-primary-500'} group-hover:scale-110 transition-transform`} />
-                    <h3 className={`text-xl font-bold mb-2 ${isActive ? 'text-white' : 'text-white'}`}>
-                      {category.title}
-                    </h3>
-                    <p className={`text-sm ${isActive ? 'text-white/90' : 'text-gray-400'}`}>
-                      {category.description}
-                    </p>
-                    <div className={`mt-4 text-sm font-semibold ${isActive ? 'text-white' : 'text-primary-500'}`}>
-                      {category.skills.length} Skills
-                    </div>
-                  </div>
-
-                  {/* Active Indicator */}
-                  {isActive && (
-                    <div className="absolute top-4 right-4">
-                      <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
-                    </div>
-                  )}
+                  <Icon className={`text-base flex-shrink-0 ${isActive ? "text-primary-500" : "text-white/30 group-hover:text-white/50"}`} />
+                  <span>{shortTitle}</span>
+                  <span
+                    className={`ml-auto text-[10px] px-2 py-0.5 rounded-full font-black ${
+                      isActive ? "bg-primary-500/20 text-primary-500" : "bg-white/5 text-white/30"
+                    }`}
+                  >
+                    {cat.skills.length}
+                  </span>
                 </button>
               );
             })}
           </div>
         </div>
+      </section>
 
-        {/* Skills Grid */}
-        <div className="mb-20">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-4xl font-heading font-bold text-white flex items-center gap-3">
-              <FaTrophy className="text-primary-500" />
-              {currentCategory.title}
-            </h2>
-            <div className="text-gray-400 text-sm">
-              {currentCategory.skills.length} skills in this category
-            </div>
-          </div>
+      {/* ── SKILLS GRID ─────────────────────────────────────────────── */}
+      <section className="py-8 px-6 sm:px-10 lg:px-20 xl:px-28">
+        <div className="max-w-7xl mx-auto">
+          <p className="font-mono text-[10px] tracking-[0.35em] text-primary-500/60 uppercase mb-2">— 03</p>
+          <ScrambleHeading
+            key={activeCategory}
+            className="font-heading font-black text-3xl sm:text-4xl text-white mb-10 uppercase"
+          >
+            {currentCat.title}
+          </ScrambleHeading>
 
-          <div ref={skillsGridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentCategory.skills.map((skill, index) => (
-              <div
-                key={skill.name}
-                className="skill-card glass-dark rounded-2xl p-6 border-2 border-primary-500/30 hover:border-primary-500 transition-all duration-300 relative overflow-hidden group"
-                onMouseEnter={() => setHoveredSkill(skill.name)}
-                onMouseLeave={() => setHoveredSkill(null)}
-              >
-                {/* Background Glow */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary-500/0 to-primary-600/0 group-hover:from-primary-500/10 group-hover:to-primary-600/10 transition-all duration-500"></div>
-
-                <div className="relative z-10">
-                  {/* Header */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-4">
-                      {/* Skill Icon */}
-                      <div className="w-16 h-16 rounded-xl bg-white/10 border border-primary-500/30 flex items-center justify-center p-2 group-hover:scale-110 group-hover:rotate-6 transition-all">
-                        <img src={skill.icon} alt={skill.name} className="w-full h-full object-contain" />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-white mb-1 group-hover:text-primary-400 transition-colors">
-                          {skill.name}
-                        </h3>
-                        <div className="flex items-center gap-2 text-sm text-gray-400">
-                          <FaChartLine className="text-primary-500" />
-                          {skill.yearsExp} {skill.yearsExp === 1 ? 'year' : 'years'}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Proficiency Badge */}
-                    <div className={`px-3 py-1 rounded-full text-xs font-bold border-2 ${skill.level >= 90
-                      ? 'bg-green-500/20 text-green-400 border-green-500/50'
-                      : skill.level >= 75
-                        ? 'bg-blue-500/20 text-blue-400 border-blue-500/50'
-                        : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50'
-                      }`}>
-                      {skill.level >= 90 ? 'Expert' : skill.level >= 75 ? 'Advanced' : 'Intermediate'}
-                    </div>
-                  </div>
-
-                  {/* Description */}
-                  {skill.description && (
-                    <p className="text-gray-400 text-sm mb-4 leading-relaxed">
-                      {skill.description}
-                    </p>
-                  )}
-
-                  {/* Progress Bar */}
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-gray-400">Proficiency</span>
-                      <span className="text-sm font-bold text-primary-500">{skill.level}%</span>
-                    </div>
-                    <div className="h-3 bg-dark-800 rounded-full overflow-hidden border border-primary-500/30">
-                      <div
-                        className="progress-fill h-full bg-gradient-to-r from-primary-500 to-primary-600 rounded-full relative overflow-hidden"
-                        data-level={skill.level}
-                        style={{ width: '0%' }}
-                      >
-                        {/* Shimmer Effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Stats */}
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2 text-gray-400">
-                      <FaStar className="text-yellow-400" />
-                      <span>{skill.projects} projects</span>
-                    </div>
-                    {skill.level >= 90 && (
-                      <div className="flex items-center gap-1 text-primary-500">
-                        <FaFire className="animate-pulse" />
-                        <span className="text-xs font-semibold">Top Skill</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Hover Effect Border */}
-                <div className="absolute inset-0 border-2 border-primary-500/0 group-hover:border-primary-500/50 rounded-2xl transition-all duration-300 pointer-events-none"></div>
-              </div>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {currentCat.skills.map((skill, i) => {
+              const meta = TECH_META[skill.name] ?? { color: "#f97316", icon: skill.icon };
+              const { label: profLabel, color: profColor } = getProficiencyLabel(skill.level);
+              return (
+                <SkillCard
+                  key={`${activeCategory}-${skill.name}`}
+                  skill={skill}
+                  meta={meta}
+                  profLabel={profLabel}
+                  profColor={profColor}
+                  index={i}
+                />
+              );
+            })}
           </div>
         </div>
+      </section>
 
-        {/* Skill Summary */}
-        <div className="glass-dark rounded-3xl p-10 border-2 border-primary-500/30">
-          <h2 className="text-3xl font-heading font-bold text-white mb-8 text-center">
+      {/* ── DIVIDER ─────────────────────────────────────────────────── */}
+      <div className="px-6 sm:px-10 lg:px-20 xl:px-28 pt-8">
+        <div className="max-w-7xl mx-auto border-t border-white/5" />
+      </div>
+
+      {/* ── PROFICIENCY OVERVIEW ─────────────────────────────────────── */}
+      <section className="py-16 px-6 sm:px-10 lg:px-20 xl:px-28">
+        <div className="max-w-7xl mx-auto">
+          <p className="font-mono text-[10px] tracking-[0.35em] text-primary-500/60 uppercase mb-2">— 04</p>
+          <ScrambleHeading className="font-heading font-black text-3xl sm:text-4xl text-white mb-12 uppercase">
             Proficiency Overview
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {Object.entries(skillCategories).map(([key, category]) => {
-              const avgLevel = Math.round(
-                category.skills.reduce((acc, skill) => acc + skill.level, 0) / category.skills.length
-              );
-              const Icon = categoryIcons[key];
+          </ScrambleHeading>
 
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-10">
+            {Object.entries(skillCategories).map(([key, cat]) => {
+              const Icon = CATEGORY_ICONS[key];
+              const avg = getCategoryAvg(key);
+              const shortTitle = cat.title.replace(" Development", "").replace(" & Cloud", "");
               return (
-                <div key={key} className="text-center group">
-                  <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary-500/20 to-primary-600/20 border-4 border-primary-500/30 flex items-center justify-center relative group-hover:scale-110 transition-transform">
-                    <Icon className="text-5xl text-primary-500" />
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary-500/0 to-primary-600/0 group-hover:from-primary-500/20 group-hover:to-primary-600/20 transition-all"></div>
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-2">{category.title}</h3>
-                  <div className="text-3xl font-bold text-primary-500 mb-1">{avgLevel}%</div>
-                  <div className="text-sm text-gray-400">Average Proficiency</div>
+                <div key={key} className="skills-summary-item">
+                  <CircleProgress pct={avg} label={shortTitle} icon={Icon} color={cat.color} />
                 </div>
               );
             })}
           </div>
         </div>
-      </div>
+      </section>
+
+      <div className="pb-12" />
     </div>
   );
 };

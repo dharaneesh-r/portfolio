@@ -1,262 +1,613 @@
-import { useState, useRef } from "react";
-import emailjs from '@emailjs/browser';
-import { FaGithub, FaLinkedin, FaEnvelope, FaPhone, FaMapMarkerAlt, FaPaperPlane, FaCheckCircle, FaTimesCircle, FaUser, FaCommentDots } from "react-icons/fa";
+import { useState, useRef, useEffect } from "react";
+import emailjs from "@emailjs/browser";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import {
+  FaGithub, FaLinkedin, FaEnvelope, FaPhone, FaMapMarkerAlt,
+  FaPaperPlane, FaCheckCircle, FaTimesCircle, FaArrowRight,
+} from "react-icons/fa";
 import { personalInfo } from "../data/personal";
+import MagneticWrapper from "./ui/MagneticWrapper";
+import { useReducedMotion } from "../context/ReducedMotionContext";
+import { EASE, DUR } from "../motion/tokens";
 
+// ── ScrambleHeading ────────────────────────────────────────────────────────
+const ScrambleHeading = ({ children, className = "", delay = 0 }) => {
+  const elRef = useRef(null);
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#@!$";
+
+  useEffect(() => {
+    const el = elRef.current;
+    if (!el) return;
+    const original = el.textContent;
+    const TICK = 36, DUR_MS = 400, STAG = 45;
+
+    const run = () => {
+      const now = Date.now();
+      const starts = original.split("").map((_, i) => now + i * STAG + delay);
+      const settled = original.split("").map(() => false);
+      const iv = setInterval(() => {
+        const t = Date.now();
+        let all = true;
+        const result = original.split("").map((ch, i) => {
+          if (ch === " ") return " ";
+          if (settled[i]) return ch;
+          if (t < starts[i]) { all = false; return ch; }
+          const elapsed = t - starts[i];
+          if (elapsed >= DUR_MS) { settled[i] = true; return ch; }
+          all = false;
+          return chars[Math.floor(Math.random() * chars.length)];
+        });
+        el.textContent = result.join("");
+        if (all) clearInterval(iv);
+      }, TICK);
+      return iv;
+    };
+
+    let iv;
+    const st = ScrollTrigger.create({
+      trigger: el,
+      start: "top 88%",
+      once: true,
+      onEnter: () => { iv = run(); },
+    });
+    return () => { st.kill(); clearInterval(iv); };
+  }, []);
+
+  return <h2 ref={elRef} className={className}>{children}</h2>;
+};
+
+// ── SocialIcon3D ───────────────────────────────────────────────────────────
+const SocialIcon3D = ({ href, icon: Icon, label, color = "#f97316" }) => {
+  const ref = useRef(null);
+
+  const onMove = (e) => {
+    const rect = ref.current.getBoundingClientRect();
+    const cx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    const cy = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+    gsap.to(ref.current, {
+      rotateY: cx * 20,
+      rotateX: -cy * 20,
+      scale: 1.15,
+      duration: 0.25,
+      ease: "power2.out",
+      transformPerspective: 400,
+    });
+  };
+
+  const onLeave = () =>
+    gsap.to(ref.current, {
+      rotateY: 0,
+      rotateX: 0,
+      scale: 1,
+      duration: 0.6,
+      ease: "elastic.out(1, 0.45)",
+    });
+
+  return (
+    <a
+      ref={ref}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      className="w-12 h-12 rounded-xl border flex items-center justify-center transition-colors duration-300"
+      style={{
+        borderColor: color + "40",
+        backgroundColor: color + "10",
+        transformStyle: "preserve-3d",
+        willChange: "transform",
+      }}
+    >
+      <Icon className="text-lg" style={{ color }} />
+    </a>
+  );
+};
+
+// ── Contact ────────────────────────────────────────────────────────────────
 const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
-  const formRef = useRef();
+  const formRef = useRef(null);
+  const pageRef = useRef(null);
+  const reducedMotion = useReducedMotion();
 
+  // ── Hero clip-path reveal (immediate, no scroll trigger) ──────────────
+  useEffect(() => {
+    if (reducedMotion) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        ".hero-line",
+        { clipPath: "inset(0 0 100% 0)", y: 40, opacity: 0 },
+        {
+          clipPath: "inset(0 0 0% 0)",
+          y: 0,
+          opacity: 1,
+          duration: 1.0,
+          ease: "power4.out",
+          stagger: 0.15,
+        }
+      );
+      gsap.fromTo(
+        ".hero-sub",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", delay: 0.45 }
+      );
+      gsap.fromTo(
+        ".hero-label",
+        { opacity: 0, x: -20 },
+        { opacity: 1, x: 0, duration: 0.6, ease: "power2.out", delay: 0.1 }
+      );
+    }, pageRef);
+
+    return () => ctx.revert();
+  }, [reducedMotion]);
+
+  // ── Individual scroll-triggered animations ────────────────────────────
+  useEffect(() => {
+    if (reducedMotion) return;
+
+    const ctx = gsap.context(() => {
+      // Contact info cards — each triggers itself
+      gsap.utils.toArray(".contact-info-card").forEach((el, i) => {
+        gsap.fromTo(
+          el,
+          { opacity: 0, x: -50 },
+          {
+            opacity: 1,
+            x: 0,
+            scrollTrigger: { trigger: el, start: "top 88%", once: true },
+            duration: 0.7,
+            delay: i * 0.1,
+            ease: "power3.out",
+          }
+        );
+      });
+
+      // Form wrapper
+      const formWrap = document.querySelector(".contact-form-wrap");
+      if (formWrap) {
+        gsap.fromTo(
+          formWrap,
+          { opacity: 0, x: 50 },
+          {
+            opacity: 1,
+            x: 0,
+            scrollTrigger: { trigger: formWrap, start: "top 88%", once: true },
+            duration: 0.8,
+            ease: "power3.out",
+          }
+        );
+      }
+
+      // Form fields — each triggers itself
+      gsap.utils.toArray(".form-field").forEach((el, i) => {
+        gsap.fromTo(
+          el,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            scrollTrigger: { trigger: el, start: "top 88%", once: true },
+            duration: 0.5,
+            delay: i * 0.08,
+            ease: "power2.out",
+          }
+        );
+      });
+
+      // Bottom CTA section
+      const cta = document.querySelector(".cta-section");
+      if (cta) {
+        gsap.fromTo(
+          cta,
+          { opacity: 0, y: 40 },
+          {
+            opacity: 1,
+            y: 0,
+            scrollTrigger: { trigger: cta, start: "top 88%", once: true },
+            duration: 0.9,
+            ease: "power3.out",
+          }
+        );
+      }
+    }, pageRef);
+
+    return () => ctx.revert();
+  }, [reducedMotion]);
+
+  // ── Form focus label highlight ─────────────────────────────────────────
+  const handleFocus = (labelFor) => {
+    const label = document.querySelector(`label[for="${labelFor}"]`);
+    if (label) gsap.to(label, { color: "#f97316", scale: 1.04, duration: 0.2, transformOrigin: "left center" });
+  };
+  const handleBlur = (labelFor) => {
+    const label = document.querySelector(`label[for="${labelFor}"]`);
+    if (label) gsap.to(label, { color: "#ffffff", scale: 1, duration: 0.2, transformOrigin: "left center" });
+  };
+
+  // ── Submit ─────────────────────────────────────────────────────────────
   const onSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus(null);
 
-    try {
-      // EmailJS configuration
-      // You need to:
-      // 1. Sign up at https://www.emailjs.com/
-      // 2. Create an email service
-      // 3. Create an email template
-      // 4. Replace these with your actual IDs
-      const result = await emailjs.sendForm(
-        'YOUR_SERVICE_ID',        // Replace with your EmailJS service ID
-        'YOUR_TEMPLATE_ID',       // Replace with your EmailJS template ID
-        formRef.current,
-        'YOUR_PUBLIC_KEY'         // Replace with your EmailJS public key
-      );
+    const btn = e.currentTarget.querySelector(".submit-btn");
+    if (btn) gsap.to(btn, { scale: 0.97, duration: 0.12 });
 
-      console.log('Email sent successfully:', result.text);
-      setSubmitStatus({ type: 'success', message: 'Message sent successfully! I\'ll get back to you soon.' });
+    try {
+      const result = await emailjs.sendForm(
+        "YOUR_SERVICE_ID",
+        "YOUR_TEMPLATE_ID",
+        formRef.current,
+        "YOUR_PUBLIC_KEY"
+      );
+      console.log("Email sent:", result.text);
+      setSubmitStatus({ type: "success", message: "Message sent! I'll get back to you soon." });
       formRef.current.reset();
     } catch (error) {
-      console.error('Email send failed:', error);
-      setSubmitStatus({ type: 'error', message: 'Failed to send message. Please try again or email me directly.' });
+      console.error("Email failed:", error);
+      setSubmitStatus({ type: "error", message: "Failed to send. Please email me directly." });
     } finally {
       setIsSubmitting(false);
+      if (btn) gsap.to(btn, { scale: 1, duration: 0.3, ease: "elastic.out(1, 0.5)" });
     }
   };
 
+  const github = personalInfo.socialLinks.find((l) => l.platform === "GitHub");
+  const linkedin = personalInfo.socialLinks.find((l) => l.platform === "LinkedIn");
+
   return (
-    <div className="min-h-screen bg-dark-900 py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background */}
+    <div ref={pageRef} className="min-h-screen bg-dark-900 relative overflow-hidden">
+      {/* Subtle background glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-primary-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-32 left-0 w-[600px] h-[600px] bg-primary-500/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-40 right-0 w-[500px] h-[500px] bg-primary-600/5 rounded-full blur-[100px]" />
       </div>
 
-      <div className="max-w-6xl mx-auto relative z-10">
-        {/* Hero */}
-        <div className="text-center mb-16">
-          <h1 className="font-heading font-extrabold text-5xl sm:text-6xl md:text-7xl mb-6">
-            <span className="gradient-text">Get In Touch</span>
-          </h1>
-          <p className="text-gray-300 text-xl sm:text-2xl max-w-3xl mx-auto leading-relaxed">
-            Have a project in mind? Let's <span className="text-primary-500 font-bold">collaborate</span> and create something amazing!
+      {/* ── HERO ──────────────────────────────────────────────────────── */}
+      <section className="pt-24 pb-16 px-6 sm:px-10 lg:px-20 xl:px-28 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          <p className="hero-label font-mono text-primary-500 text-sm tracking-[0.2em] uppercase mb-6 flex items-center gap-3">
+            <span className="inline-block w-6 h-px bg-primary-500" />
+            Contact
           </p>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Contact Info - Sidebar */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Contact Cards */}
-            <div className="glass-dark rounded-2xl p-6 border border-primary-500/30 hover:border-primary-500 transition-all group">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-primary-500/20 border border-primary-500/40 flex items-center justify-center text-primary-500 text-xl group-hover:scale-110 transition-transform">
-                  <FaEnvelope />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-white font-bold mb-2">Email</h3>
-                  <a href={`mailto:${personalInfo.email}`} className="text-gray-400 hover:text-primary-500 transition-colors text-sm break-all">
-                    {personalInfo.email}
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div className="glass-dark rounded-2xl p-6 border border-primary-500/30 hover:border-primary-500 transition-all group">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-primary-500/20 border border-primary-500/40 flex items-center justify-center text-primary-500 text-xl group-hover:scale-110 transition-transform">
-                  <FaPhone />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-white font-bold mb-2">Phone</h3>
-                  <a href={`tel:${personalInfo.phone}`} className="text-gray-400 hover:text-primary-500 transition-colors text-sm">
-                    {personalInfo.phone}
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div className="glass-dark rounded-2xl p-6 border border-primary-500/30 hover:border-primary-500 transition-all group">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-primary-500/20 border border-primary-500/40 flex items-center justify-center text-primary-500 text-xl group-hover:scale-110 transition-transform">
-                  <FaMapMarkerAlt />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-white font-bold mb-2">Location</h3>
-                  <p className="text-gray-400 text-sm">{personalInfo.location}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Social Links */}
-            <div className="glass-dark rounded-2xl p-6 border border-primary-500/30">
-              <h3 className="text-white font-bold mb-4">Connect With Me</h3>
-              <div className="flex gap-3">
-                {personalInfo.socialLinks
-                  .filter(link => ['GitHub', 'LinkedIn', 'Email'].includes(link.platform))
-                  .map((link, idx) => (
-                    <a
-                      key={idx}
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-12 h-12 rounded-xl bg-primary-500/20 border border-primary-500/40 flex items-center justify-center text-primary-500 hover:bg-primary-500 hover:text-white transition-all hover:scale-110"
-                      title={link.platform}
-                    >
-                      {link.platform === 'GitHub' && <FaGithub className="text-xl" />}
-                      {link.platform === 'LinkedIn' && <FaLinkedin className="text-xl" />}
-                      {link.platform === 'Email' && <FaEnvelope className="text-xl" />}
-                    </a>
-                  ))}
-              </div>
-            </div>
-
-            {/* Quick Info */}
-            <div className="glass-dark rounded-2xl p-6 border border-primary-500/30 bg-gradient-to-br from-primary-500/10 to-transparent">
-              <h3 className="text-white font-bold mb-3">Quick Response</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                I typically respond within <span className="text-primary-500 font-semibold">24 hours</span>. Looking forward to hearing from you!
-              </p>
-            </div>
+          <div className="overflow-hidden mb-2">
+            <h1
+              className="hero-line font-heading font-black text-white leading-none"
+              style={{ fontSize: "clamp(52px, 9vw, 130px)" }}
+            >
+              GET IN
+            </h1>
+          </div>
+          <div className="overflow-hidden mb-8">
+            <h1
+              className="hero-line font-heading font-black leading-none"
+              style={{
+                fontSize: "clamp(52px, 9vw, 130px)",
+                WebkitTextStroke: "2px #f97316",
+                color: "transparent",
+              }}
+            >
+              TOUCH.
+            </h1>
           </div>
 
-          {/* Contact Form */}
-          <div className="lg:col-span-2">
-            <form ref={formRef} onSubmit={onSubmit} className="glass-dark rounded-2xl p-8 border border-primary-500/30">
-              <h2 className="text-3xl font-bold text-white mb-6">Send Me a Message</h2>
+          <p className="hero-sub text-white/50 text-lg sm:text-xl max-w-2xl leading-relaxed">
+            Have a project in mind or want to{" "}
+            <span className="text-primary-500 font-semibold">collaborate</span>?
+            I'm always open to new opportunities and interesting conversations.
+          </p>
+        </div>
+      </section>
 
-              <div className="space-y-5">
-                {/* Name */}
-                <div>
-                  <label htmlFor="user_name" className="block text-white font-semibold mb-2 text-sm">
-                    Your Name *
-                  </label>
-                  <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-500">
-                      <FaUser />
-                    </div>
+      {/* ── MAIN GRID ─────────────────────────────────────────────────── */}
+      <section className="py-16 px-6 sm:px-10 lg:px-20 xl:px-28 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+
+            {/* ── LEFT SIDEBAR ────────────────────────────────────────── */}
+            <div className="lg:col-span-1 space-y-5">
+
+              {/* Availability */}
+              <div className="contact-info-card rounded-xl border border-white/6 bg-white/[0.02] hover:bg-white/[0.04] hover:border-primary-500/20 transition-all duration-500 p-5">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-green-400" />
+                  </span>
+                  <span className="font-mono text-xs text-white/40 uppercase tracking-widest">Status</span>
+                </div>
+                <p className="text-white font-heading font-black text-xl leading-tight mb-1">
+                  Available for Work
+                </p>
+                <p className="text-white/40 text-sm font-mono leading-relaxed">
+                  {personalInfo.currentFocus}
+                </p>
+              </div>
+
+              {/* Email */}
+              <div className="contact-info-card rounded-xl border border-white/6 bg-white/[0.02] hover:bg-white/[0.04] hover:border-primary-500/20 transition-all duration-500 p-5">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <FaEnvelope className="text-primary-500 text-sm" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-mono text-xs text-white/30 uppercase tracking-widest mb-1">Email</p>
+                    <a
+                      href={`mailto:${personalInfo.email}`}
+                      className="text-white hover:text-primary-500 transition-colors duration-300 text-sm break-all leading-relaxed"
+                    >
+                      {personalInfo.email}
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* Phone */}
+              <div className="contact-info-card rounded-xl border border-white/6 bg-white/[0.02] hover:bg-white/[0.04] hover:border-primary-500/20 transition-all duration-500 p-5">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <FaPhone className="text-primary-500 text-sm" />
+                  </div>
+                  <div>
+                    <p className="font-mono text-xs text-white/30 uppercase tracking-widest mb-1">Phone</p>
+                    <a
+                      href={`tel:${personalInfo.phone}`}
+                      className="text-white hover:text-primary-500 transition-colors duration-300 text-sm"
+                    >
+                      {personalInfo.phone}
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* Location */}
+              <div className="contact-info-card rounded-xl border border-white/6 bg-white/[0.02] hover:bg-white/[0.04] hover:border-primary-500/20 transition-all duration-500 p-5">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <FaMapMarkerAlt className="text-primary-500 text-sm" />
+                  </div>
+                  <div>
+                    <p className="font-mono text-xs text-white/30 uppercase tracking-widest mb-1">Location</p>
+                    <p className="text-white text-sm">{personalInfo.location}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Social links with 3D tilt */}
+              <div className="contact-info-card rounded-xl border border-white/6 bg-white/[0.02] hover:bg-white/[0.04] hover:border-primary-500/20 transition-all duration-500 p-5">
+                <p className="font-mono text-xs text-white/30 uppercase tracking-widest mb-4">Connect</p>
+                <div className="flex gap-3">
+                  {github && (
+                    <SocialIcon3D
+                      href={github.url}
+                      icon={FaGithub}
+                      label="GitHub"
+                      color="#f97316"
+                    />
+                  )}
+                  {linkedin && (
+                    <SocialIcon3D
+                      href={linkedin.url}
+                      icon={FaLinkedin}
+                      label="LinkedIn"
+                      color="#f97316"
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* Response time */}
+              <div className="contact-info-card rounded-xl border border-white/6 bg-white/[0.02] hover:bg-white/[0.04] hover:border-primary-500/20 transition-all duration-500 p-5">
+                <p className="font-mono text-xs text-white/30 uppercase tracking-widest mb-2">Response Time</p>
+                <p className="text-white text-sm leading-relaxed">
+                  Usually within{" "}
+                  <span className="text-primary-500 font-semibold">24 hours</span>.
+                  Looking forward to hearing from you!
+                </p>
+              </div>
+            </div>
+
+            {/* ── CONTACT FORM ────────────────────────────────────────── */}
+            <div className="contact-form-wrap lg:col-span-2">
+              <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-6 sm:p-8">
+                <ScrambleHeading className="font-heading font-black text-white text-3xl sm:text-4xl mb-8">
+                  Send a Message
+                </ScrambleHeading>
+
+                <form ref={formRef} onSubmit={onSubmit} className="space-y-5">
+                  {/* Name */}
+                  <div className="form-field">
+                    <label
+                      htmlFor="user_name"
+                      className="block text-white font-mono text-xs uppercase tracking-widest mb-2"
+                    >
+                      Your Name *
+                    </label>
                     <input
                       type="text"
                       id="user_name"
                       name="user_name"
                       required
-                      className="w-full pl-12 pr-4 py-3 bg-dark-800 border border-primary-500/30 rounded-xl text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all"
                       placeholder="John Doe"
+                      onFocus={() => handleFocus("user_name")}
+                      onBlur={() => handleBlur("user_name")}
+                      className="w-full px-4 py-3 bg-dark-800 border border-white/10 rounded-xl text-white placeholder-white/20 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none transition-all duration-300 text-sm"
                     />
                   </div>
-                </div>
 
-                {/* Email */}
-                <div>
-                  <label htmlFor="user_email" className="block text-white font-semibold mb-2 text-sm">
-                    Your Email *
-                  </label>
-                  <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-500">
-                      <FaEnvelope />
-                    </div>
+                  {/* Email */}
+                  <div className="form-field">
+                    <label
+                      htmlFor="user_email"
+                      className="block text-white font-mono text-xs uppercase tracking-widest mb-2"
+                    >
+                      Your Email *
+                    </label>
                     <input
                       type="email"
                       id="user_email"
                       name="user_email"
                       required
-                      className="w-full pl-12 pr-4 py-3 bg-dark-800 border border-primary-500/30 rounded-xl text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all"
                       placeholder="john@example.com"
+                      onFocus={() => handleFocus("user_email")}
+                      onBlur={() => handleBlur("user_email")}
+                      className="w-full px-4 py-3 bg-dark-800 border border-white/10 rounded-xl text-white placeholder-white/20 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none transition-all duration-300 text-sm"
                     />
                   </div>
-                </div>
 
-                {/* Subject */}
-                <div>
-                  <label htmlFor="subject" className="block text-white font-semibold mb-2 text-sm">
-                    Subject *
-                  </label>
-                  <input
-                    type="text"
-                    id="subject"
-                    name="subject"
-                    required
-                    className="w-full px-4 py-3 bg-dark-800 border border-primary-500/30 rounded-xl text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all"
-                    placeholder="Project Collaboration"
-                  />
-                </div>
+                  {/* Subject */}
+                  <div className="form-field">
+                    <label
+                      htmlFor="subject"
+                      className="block text-white font-mono text-xs uppercase tracking-widest mb-2"
+                    >
+                      Subject *
+                    </label>
+                    <input
+                      type="text"
+                      id="subject"
+                      name="subject"
+                      required
+                      placeholder="Project Collaboration"
+                      onFocus={() => handleFocus("subject")}
+                      onBlur={() => handleBlur("subject")}
+                      className="w-full px-4 py-3 bg-dark-800 border border-white/10 rounded-xl text-white placeholder-white/20 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none transition-all duration-300 text-sm"
+                    />
+                  </div>
 
-                {/* Message */}
-                <div>
-                  <label htmlFor="message" className="block text-white font-semibold mb-2 text-sm">
-                    Message *
-                  </label>
-                  <div className="relative">
-                    <div className="absolute left-4 top-4 text-primary-500">
-                      <FaCommentDots />
-                    </div>
+                  {/* Message */}
+                  <div className="form-field">
+                    <label
+                      htmlFor="message"
+                      className="block text-white font-mono text-xs uppercase tracking-widest mb-2"
+                    >
+                      Message *
+                    </label>
                     <textarea
                       id="message"
                       name="message"
                       required
-                      rows="6"
-                      className="w-full pl-12 pr-4 py-3 bg-dark-800 border border-primary-500/30 rounded-xl text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all resize-none"
+                      rows="5"
                       placeholder="Tell me about your project..."
-                    ></textarea>
+                      onFocus={() => handleFocus("message")}
+                      onBlur={() => handleBlur("message")}
+                      className="w-full px-4 py-3 bg-dark-800 border border-white/10 rounded-xl text-white placeholder-white/20 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none transition-all duration-300 resize-none text-sm"
+                    />
                   </div>
-                </div>
 
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`w-full flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold text-lg rounded-xl transition-all ${isSubmitting
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'hover:shadow-lg hover:shadow-primary-500/50 hover:scale-105'
-                    }`}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      <FaPaperPlane />
-                      Send Message
-                    </>
-                  )}
-                </button>
-
-                {/* Status Message */}
-                {submitStatus && (
-                  <div
-                    className={`flex items-center gap-3 p-4 rounded-xl border-2 ${submitStatus.type === 'success'
-                      ? 'bg-green-500/10 border-green-500/50 text-green-400'
-                      : 'bg-red-500/10 border-red-500/50 text-red-400'
+                  {/* Submit */}
+                  <div className="form-field">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className={`submit-btn w-full flex items-center justify-center gap-3 px-8 py-4 bg-primary-500 text-white font-heading font-black text-base rounded-full transition-all duration-300 ${
+                        isSubmitting
+                          ? "opacity-60 cursor-not-allowed"
+                          : "hover:bg-primary-600 hover:shadow-[0_0_40px_rgba(249,115,22,0.4)] hover:scale-[1.02]"
                       }`}
-                  >
-                    {submitStatus.type === 'success' ? (
-                      <FaCheckCircle className="text-2xl flex-shrink-0" />
-                    ) : (
-                      <FaTimesCircle className="text-2xl flex-shrink-0" />
-                    )}
-                    <p className="text-sm font-semibold">{submitStatus.message}</p>
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <FaPaperPlane className="text-sm" />
+                          Send Message
+                          <FaArrowRight className="text-sm ml-1" />
+                        </>
+                      )}
+                    </button>
                   </div>
-                )}
+
+                  {/* Status notification */}
+                  {submitStatus && (
+                    <div
+                      className={`flex items-center gap-3 p-4 rounded-xl border animate-fadeIn ${
+                        submitStatus.type === "success"
+                          ? "bg-green-500/10 border-green-500/30 text-green-400"
+                          : "bg-red-500/10 border-red-500/30 text-red-400"
+                      }`}
+                    >
+                      {submitStatus.type === "success" ? (
+                        <FaCheckCircle className="text-xl flex-shrink-0" />
+                      ) : (
+                        <FaTimesCircle className="text-xl flex-shrink-0" />
+                      )}
+                      <p className="text-sm font-mono">{submitStatus.message}</p>
+                    </div>
+                  )}
+                </form>
               </div>
-            </form>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* ── BOTTOM CTA ────────────────────────────────────────────────── */}
+      <section className="py-16 px-6 sm:px-10 lg:px-20 xl:px-28 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          <div
+            className="cta-section rounded-2xl p-8 sm:p-12 border border-primary-500/20 relative overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(249,115,22,0.08) 0%, rgba(249,115,22,0.02) 50%, rgba(255,255,255,0.01) 100%)",
+            }}
+          >
+            {/* Decorative orb */}
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary-500/10 rounded-full blur-[80px] pointer-events-none" />
+
+            <p className="font-mono text-primary-500 text-xs uppercase tracking-[0.2em] mb-4">
+              — Ready to start?
+            </p>
+
+            <ScrambleHeading
+              className="font-heading font-black text-white text-3xl sm:text-4xl lg:text-5xl mb-4 leading-tight"
+              delay={100}
+            >
+              Let's Build Together
+            </ScrambleHeading>
+
+            <p className="text-white/40 text-base sm:text-lg max-w-xl mb-8 leading-relaxed">
+              Whether it's a startup MVP, an enterprise platform, or an open-source
+              project — let's turn your ideas into reality.
+            </p>
+
+            <div className="flex flex-wrap gap-4">
+              <MagneticWrapper>
+                <a
+                  href={`mailto:${personalInfo.email}`}
+                  className="inline-flex items-center gap-2 px-7 py-3.5 bg-primary-500 hover:bg-primary-600 text-white font-heading font-black rounded-full transition-all duration-300 hover:shadow-[0_0_30px_rgba(249,115,22,0.5)] text-sm"
+                >
+                  <FaEnvelope className="text-xs" />
+                  Email Me Directly
+                </a>
+              </MagneticWrapper>
+
+              {linkedin && (
+                <MagneticWrapper>
+                  <a
+                    href={linkedin.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-7 py-3.5 border border-white/15 hover:border-primary-500/40 text-white/70 hover:text-white font-heading font-black rounded-full transition-all duration-300 text-sm"
+                  >
+                    <FaLinkedin className="text-xs" />
+                    Connect on LinkedIn
+                  </a>
+                </MagneticWrapper>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

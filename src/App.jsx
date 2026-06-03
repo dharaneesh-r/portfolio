@@ -1,67 +1,64 @@
-import { Route, Routes } from "react-router-dom";
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import Home from "./Components/Home";
-import Navbar from "./Components/Navbar";
-import Aboutme from "./Components/Aboutme";
-import Skills from "./Components/Skills";
-import Projects from "./Components/Projects";
-import Contact from "./Components/Contact";
+/**
+ * App.jsx
+ * ─────────────────────────────────────────────────────────────────
+ * Root layout. Library ownership per component:
+ *
+ *  Cursor           → GSAP (position + scale)
+ *  PageTransition   → Framer Motion (wipe overlay + scroll reset)
+ *  Route content    → see each component
+ *
+ * NOTE: gsap.registerPlugin is called ONCE in main.jsx.
+ *       Do NOT call it here or in any component.
+ */
+
+import { Routes, Route } from "react-router-dom";
+import { MotionConfig }  from "framer-motion";
+import CursorTrail      from "./Components/layout/CursorTrail";
+import PageTransition    from "./Components/layout/PageTransition";
+import Navbar            from "./Components/Navbar";
+import Home              from "./Components/Home";
+import Aboutme           from "./Components/Aboutme";
+import Skills            from "./Components/Skills";
+import Projects          from "./Components/Projects";
+import Contact           from "./Components/Contact";
+import { useReducedMotion } from "./context/ReducedMotionContext";
 
 const App = () => {
-  const cursorRef = useRef(null);
-  const cursorDotRef = useRef(null);
-
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (cursorRef.current && cursorDotRef.current) {
-        gsap.to(cursorRef.current, {
-          x: e.clientX,
-          y: e.clientY,
-          duration: 0.3,
-          ease: "power2.out"
-        });
-
-        gsap.to(cursorDotRef.current, {
-          x: e.clientX,
-          y: e.clientY,
-          duration: 0.1,
-          ease: "power2.out"
-        });
-      }
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+  const prefersReduced = useReducedMotion();
 
   return (
-    <div className="min-h-screen bg-dark-900">
-      {/* Custom Cursor */}
-      <div
-        ref={cursorRef}
-        className="fixed w-8 h-8 border-2 border-primary-500 rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 mix-blend-difference"
-        style={{ left: 0, top: 0 }}
-      />
-      <div
-        ref={cursorDotRef}
-        className="fixed w-2 h-2 bg-primary-500 rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2"
-        style={{ left: 0, top: 0 }}
-      />
+    /*
+     * MotionConfig reducedMotion="user" makes Framer Motion
+     * automatically disable all animations when the OS flag is set.
+     * Our manual prefersReduced checks handle GSAP + Three.js.
+     */
+    <MotionConfig reducedMotion="user">
+      <div className="min-h-screen bg-dark-900">
+        {/* Codrops SVG-throw trail cursor — GSAP owned, hides on reduced-motion */}
+        <CursorTrail />
 
-      <Navbar />
-      <main className="w-full">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/aboutme" element={<Aboutme />} />
-          <Route path="/skills" element={<Skills />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/contact" element={<Contact />} />
-        </Routes>
-      </main>
-    </div>
+        {/*
+         * Orange full-screen wipe that fires on every route change.
+         * Also handles scroll-to-top + ScrollTrigger.refresh.
+         * Framer Motion owned. Must be a sibling of <Routes>, not a
+         * wrapper, so it overlays the content without re-mounting it.
+         */}
+        <PageTransition />
+
+        <Navbar />
+
+        <main className="w-full">
+          <Routes>
+            <Route path="/"         element={<Home />}    />
+            <Route path="/aboutme"  element={<Aboutme />} />
+            <Route path="/skills"   element={<Skills />}  />
+            <Route path="/projects" element={<Projects />}/>
+            <Route path="/contact"  element={<Contact />} />
+          </Routes>
+        </main>
+      </div>
+    </MotionConfig>
   );
 };
 
 export default App;
-
