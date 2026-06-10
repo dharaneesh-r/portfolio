@@ -9,7 +9,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { skillCategories } from "../data/skills";
 import { FaCode, FaServer, FaCloud, FaTools } from "react-icons/fa";
 import { useReducedMotion } from "../context/ReducedMotionContext";
-import { EASE, DUR } from "../motion/tokens";
+import SkillsGraph from "./ui/SkillsGraph";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -501,10 +501,48 @@ const Skills = () => {
         <div className="max-w-7xl mx-auto border-t border-white/5" />
       </div>
 
-      {/* ── PROFICIENCY OVERVIEW ─────────────────────────────────────── */}
+      {/* ── KNOWLEDGE GRAPH ─────────────────────────────────────────── */}
       <section className="py-16 px-6 sm:px-10 lg:px-20 xl:px-28">
         <div className="max-w-7xl mx-auto">
           <p className="font-mono text-[10px] tracking-[0.35em] text-primary-500/60 uppercase mb-2">— 04</p>
+          <ScrambleHeading className="font-heading font-black text-3xl sm:text-4xl text-white mb-3 uppercase">
+            Knowledge Graph
+          </ScrambleHeading>
+          <p className="text-white/40 text-sm sm:text-base font-mono max-w-xl mb-8 leading-relaxed">
+            An interactive map of how my skills connect — categories branch from the
+            full-stack core, and related technologies link across the web.
+          </p>
+
+          {/* Category legend */}
+          <div className="flex flex-wrap gap-x-6 gap-y-2 mb-6">
+            {Object.entries(skillCategories).map(([key, cat]) => (
+              <div key={key} className="flex items-center gap-2">
+                <span
+                  className="w-2.5 h-2.5 rounded-full"
+                  style={{ backgroundColor: cat.color }}
+                />
+                <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-white/40">
+                  {cat.title.replace(" Development", "").replace(" & Cloud", "")}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-2xl border border-white/5 bg-white/[0.015] overflow-hidden">
+            <SkillsGraph />
+          </div>
+        </div>
+      </section>
+
+      {/* ── DIVIDER ─────────────────────────────────────────────────── */}
+      <div className="px-6 sm:px-10 lg:px-20 xl:px-28">
+        <div className="max-w-7xl mx-auto border-t border-white/5" />
+      </div>
+
+      {/* ── PROFICIENCY OVERVIEW ─────────────────────────────────────── */}
+      <section className="py-16 px-6 sm:px-10 lg:px-20 xl:px-28">
+        <div className="max-w-7xl mx-auto">
+          <p className="font-mono text-[10px] tracking-[0.35em] text-primary-500/60 uppercase mb-2">— 05</p>
           <ScrambleHeading className="font-heading font-black text-3xl sm:text-4xl text-white mb-12 uppercase">
             Proficiency Overview
           </ScrambleHeading>

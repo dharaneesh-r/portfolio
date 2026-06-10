@@ -20,6 +20,8 @@ import { personalInfo } from "../data/personal";
 import { education }    from "../data/education";
 import { experiences }  from "../data/experience";
 import MagneticWrapper  from "./ui/MagneticWrapper";
+import GsapButton       from "./ui/GsapButton";
+import SocialIcon       from "./ui/SocialIcon";
 import { useReducedMotion } from "../context/ReducedMotionContext";
 import { EASE, DUR }    from "../motion/tokens";
 
@@ -900,22 +902,19 @@ const AboutMe = () => {
                 </span>
               </div>
 
-              <div className="bio-line flex items-center gap-4">
+              <div className="bio-line flex items-center gap-3">
                 {[
-                  { href: personalInfo.socialLinks[0].url, icon: <FaGithub />,   label: "GitHub"   },
-                  { href: personalInfo.socialLinks[1].url, icon: <FaLinkedin />, label: "LinkedIn" },
-                  { href: `mailto:${personalInfo.email}`,  icon: <FaEnvelope />, label: "Email"    },
+                  { href: personalInfo.socialLinks[0].url, icon: FaGithub,   label: "GitHub"   },
+                  { href: personalInfo.socialLinks[1].url, icon: FaLinkedin, label: "LinkedIn" },
+                  { href: `mailto:${personalInfo.email}`,  icon: FaEnvelope, label: "Email"    },
                 ].map((s) => (
-                  <a
+                  <SocialIcon
                     key={s.label}
                     href={s.href}
-                    target={s.href.startsWith("http") ? "_blank" : undefined}
-                    rel="noopener noreferrer"
-                    aria-label={s.label}
-                    className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-primary-400 hover:border-primary-500/40 hover:bg-primary-500/8 transition-all duration-300 text-sm"
-                  >
-                    {s.icon}
-                  </a>
+                    icon={s.icon}
+                    label={s.label}
+                    external={s.href.startsWith("http")}
+                  />
                 ))}
               </div>
             </div>
@@ -1217,14 +1216,16 @@ const AboutMe = () => {
               </p>
 
               <MagneticWrapper strength={0.25}>
-                <a
+                <GsapButton
+                  as="a"
                   href={personalInfo.resume?.url ?? "#"}
                   download={personalInfo.resume?.filename}
-                  className="inline-flex items-center gap-3 px-8 sm:px-12 py-4 sm:py-5 bg-primary-500 hover:bg-primary-400 text-white font-heading font-bold text-sm sm:text-base rounded-full transition-all duration-300 hover:shadow-[0_0_60px_rgba(249,115,22,0.5)] hover:scale-105"
+                  variant="solid"
+                  className="px-8 sm:px-12 py-4 sm:py-5 rounded-full font-heading font-bold text-sm sm:text-base hover:shadow-[0_0_60px_rgba(249,115,22,0.5)]"
                 >
                   <FaDownload className="text-sm" />
                   Download Resume
-                </a>
+                </GsapButton>
               </MagneticWrapper>
             </div>
           </div>

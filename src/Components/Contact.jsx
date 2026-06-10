@@ -8,6 +8,8 @@ import {
 } from "react-icons/fa";
 import { personalInfo } from "../data/personal";
 import MagneticWrapper from "./ui/MagneticWrapper";
+import GsapButton from "./ui/GsapButton";
+import SocialIcon from "./ui/SocialIcon";
 import { useReducedMotion } from "../context/ReducedMotionContext";
 import { EASE, DUR } from "../motion/tokens";
 
@@ -55,55 +57,6 @@ const ScrambleHeading = ({ children, className = "", delay = 0 }) => {
   }, []);
 
   return <h2 ref={elRef} className={className}>{children}</h2>;
-};
-
-// ── SocialIcon3D ───────────────────────────────────────────────────────────
-const SocialIcon3D = ({ href, icon: Icon, label, color = "#f97316" }) => {
-  const ref = useRef(null);
-
-  const onMove = (e) => {
-    const rect = ref.current.getBoundingClientRect();
-    const cx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-    const cy = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-    gsap.to(ref.current, {
-      rotateY: cx * 20,
-      rotateX: -cy * 20,
-      scale: 1.15,
-      duration: 0.25,
-      ease: "power2.out",
-      transformPerspective: 400,
-    });
-  };
-
-  const onLeave = () =>
-    gsap.to(ref.current, {
-      rotateY: 0,
-      rotateX: 0,
-      scale: 1,
-      duration: 0.6,
-      ease: "elastic.out(1, 0.45)",
-    });
-
-  return (
-    <a
-      ref={ref}
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={label}
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
-      className="w-12 h-12 rounded-xl border flex items-center justify-center transition-colors duration-300"
-      style={{
-        borderColor: color + "40",
-        backgroundColor: color + "10",
-        transformStyle: "preserve-3d",
-        willChange: "transform",
-      }}
-    >
-      <Icon className="text-lg" style={{ color }} />
-    </a>
-  );
 };
 
 // ── Contact ────────────────────────────────────────────────────────────────
@@ -384,20 +337,10 @@ const Contact = () => {
                 <p className="font-mono text-xs text-white/30 uppercase tracking-widest mb-4">Connect</p>
                 <div className="flex gap-3">
                   {github && (
-                    <SocialIcon3D
-                      href={github.url}
-                      icon={FaGithub}
-                      label="GitHub"
-                      color="#f97316"
-                    />
+                    <SocialIcon href={github.url} icon={FaGithub} label="GitHub" size="lg" />
                   )}
                   {linkedin && (
-                    <SocialIcon3D
-                      href={linkedin.url}
-                      icon={FaLinkedin}
-                      label="LinkedIn"
-                      color="#f97316"
-                    />
+                    <SocialIcon href={linkedin.url} icon={FaLinkedin} label="LinkedIn" size="lg" />
                   )}
                 </div>
               </div>
@@ -503,13 +446,15 @@ const Contact = () => {
 
                   {/* Submit */}
                   <div className="form-field">
-                    <button
+                    <GsapButton
+                      as="button"
                       type="submit"
+                      variant="solid"
                       disabled={isSubmitting}
-                      className={`submit-btn w-full flex items-center justify-center gap-3 px-8 py-4 bg-primary-500 text-white font-heading font-black text-base rounded-full transition-all duration-300 ${
+                      className={`submit-btn w-full px-8 py-4 rounded-full font-heading font-black text-base ${
                         isSubmitting
                           ? "opacity-60 cursor-not-allowed"
-                          : "hover:bg-primary-600 hover:shadow-[0_0_40px_rgba(249,115,22,0.4)] hover:scale-[1.02]"
+                          : "hover:shadow-[0_0_40px_rgba(249,115,22,0.4)]"
                       }`}
                     >
                       {isSubmitting ? (
@@ -524,7 +469,7 @@ const Contact = () => {
                           <FaArrowRight className="text-sm ml-1" />
                         </>
                       )}
-                    </button>
+                    </GsapButton>
                   </div>
 
                   {/* Status notification */}
@@ -582,26 +527,30 @@ const Contact = () => {
 
             <div className="flex flex-wrap gap-4">
               <MagneticWrapper>
-                <a
+                <GsapButton
+                  as="a"
                   href={`mailto:${personalInfo.email}`}
-                  className="inline-flex items-center gap-2 px-7 py-3.5 bg-primary-500 hover:bg-primary-600 text-white font-heading font-black rounded-full transition-all duration-300 hover:shadow-[0_0_30px_rgba(249,115,22,0.5)] text-sm"
+                  variant="solid"
+                  className="px-7 py-3.5 rounded-full font-heading font-black text-sm hover:shadow-[0_0_30px_rgba(249,115,22,0.5)]"
                 >
                   <FaEnvelope className="text-xs" />
                   Email Me Directly
-                </a>
+                </GsapButton>
               </MagneticWrapper>
 
               {linkedin && (
                 <MagneticWrapper>
-                  <a
+                  <GsapButton
+                    as="a"
                     href={linkedin.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-7 py-3.5 border border-white/15 hover:border-primary-500/40 text-white/70 hover:text-white font-heading font-black rounded-full transition-all duration-300 text-sm"
+                    variant="outline"
+                    className="px-7 py-3.5 rounded-full font-heading font-black text-sm"
                   >
                     <FaLinkedin className="text-xs" />
                     Connect on LinkedIn
-                  </a>
+                  </GsapButton>
                 </MagneticWrapper>
               )}
             </div>

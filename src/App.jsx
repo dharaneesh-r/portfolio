@@ -11,10 +11,14 @@
  *       Do NOT call it here or in any component.
  */
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { MotionConfig }  from "framer-motion";
 import CursorTrail      from "./Components/layout/CursorTrail";
 import PageTransition    from "./Components/layout/PageTransition";
+import LiquidGlass       from "./Components/effects/LiquidGlass";
+import VoiceGreeting     from "./Components/effects/VoiceGreeting";
+import GlassShatterTransition from "./Components/effects/glassShatter/GlassShatterTransition";
+import DoubleClickHint    from "./Components/effects/DoubleClickHint";
 import Navbar            from "./Components/Navbar";
 import Home              from "./Components/Home";
 import Aboutme           from "./Components/Aboutme";
@@ -25,6 +29,7 @@ import { useReducedMotion } from "./context/ReducedMotionContext";
 
 const App = () => {
   const prefersReduced = useReducedMotion();
+  const isHome = useLocation().pathname === "/";
 
   return (
     /*
@@ -34,6 +39,16 @@ const App = () => {
      */
     <MotionConfig reducedMotion="user">
       <div className="min-h-screen bg-dark-900">
+        {/* Spoken welcome on first visitor interaction (once per session) */}
+        <VoiceGreeting />
+
+        {/* 3D glass-shatter transition: double-click advances to the next page.
+            Additive overlay; see Components/effects/glassShatter/ */}
+        <GlassShatterTransition />
+
+        {/* Homepage hint toast (after 10s): "double-click to shatter" */}
+        {isHome && <DoubleClickHint />}
+
         {/* Codrops SVG-throw trail cursor — GSAP owned, hides on reduced-motion */}
         <CursorTrail />
 
@@ -44,6 +59,10 @@ const App = () => {
          * wrapper, so it overlays the content without re-mounting it.
          */}
         <PageTransition />
+
+        {/* Liquid-glass distortion — homepage only, additive, removable.
+            Click-through overlay; see Components/effects/LiquidGlass.jsx */}
+        {isHome && <LiquidGlass />}
 
         <Navbar />
 

@@ -7,6 +7,7 @@ import {
 } from "react-icons/fa";
 import { projects, projectCategories } from "../data/projects";
 import { useReducedMotion } from "../context/ReducedMotionContext";
+import GsapButton from "./ui/GsapButton";
 import { EASE, DUR } from "../motion/tokens";
 
 // gsap.registerPlugin called once in main.jsx
@@ -249,21 +250,26 @@ const ProjectCard3D = ({ project, index, onOpen }) => {
         {/* Actions */}
         <div className="flex gap-2">
           {project.links.live && (
-            <a
+            <GsapButton
+              as="a"
               href={project.links.live}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-primary-500 hover:bg-primary-400 text-white text-xs font-mono font-bold tracking-widest uppercase rounded-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(249,115,22,0.4)]"
+              variant="solid"
+              icon={<FaExternalLinkAlt className="text-[10px]" />}
+              className="flex-1 px-4 py-2.5 text-xs font-mono font-bold tracking-widest uppercase rounded-xl hover:shadow-[0_0_30px_rgba(249,115,22,0.4)]"
             >
-              <FaExternalLinkAlt className="text-[10px]" /> Live
-            </a>
+              Live
+            </GsapButton>
           )}
-          <button
+          <GsapButton
+            as="button"
             onClick={() => onOpen(project)}
-            className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border border-white/10 hover:border-primary-500/40 bg-white/[0.02] hover:bg-primary-500/8 text-white/50 hover:text-primary-400 text-xs font-mono font-bold tracking-widest uppercase transition-all duration-300"
+            variant="ghost"
+            className="px-4 py-2.5 rounded-xl text-xs font-mono font-bold tracking-widest uppercase"
           >
             Details
-          </button>
+          </GsapButton>
         </div>
       </div>
     </div>
@@ -396,24 +402,28 @@ const ProjectModal = ({ project, onClose }) => {
           {/* Links */}
           <div className="flex flex-col sm:flex-row gap-3 pt-2">
             {project.links.live && (
-              <a
+              <GsapButton
+                as="a"
                 href={project.links.live}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 bg-primary-500 hover:bg-primary-400 text-white font-mono font-bold text-xs tracking-widest uppercase rounded-xl transition-all duration-300 hover:shadow-[0_0_50px_rgba(249,115,22,0.45)]"
+                variant="solid"
+                className="flex-1 px-6 py-3.5 font-mono font-bold text-xs tracking-widest uppercase rounded-xl hover:shadow-[0_0_50px_rgba(249,115,22,0.45)]"
               >
                 <FaExternalLinkAlt className="text-[10px]" /> View Live Project
-              </a>
+              </GsapButton>
             )}
             {project.links.github && (
-              <a
+              <GsapButton
+                as="a"
                 href={project.links.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 px-6 py-3.5 border border-white/10 hover:border-white/25 bg-white/[0.02] hover:bg-white/[0.05] text-white/60 hover:text-white font-mono font-bold text-xs tracking-widest uppercase rounded-xl transition-all duration-300"
+                variant="outline"
+                className="px-6 py-3.5 font-mono font-bold text-xs tracking-widest uppercase rounded-xl"
               >
                 <FaGithub /> View Code
-              </a>
+              </GsapButton>
             )}
           </div>
         </div>
