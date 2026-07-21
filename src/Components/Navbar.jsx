@@ -40,7 +40,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`sticky top-0 z-50 border-b border-primary-500/10 transition-all duration-300 ${
+      className={`sticky top-0 z-50 border-b border-primary-500/10 transition-all duration-300 lg:hidden ${
         scrolled
           ? "bg-dark-900/98 backdrop-blur-xl shadow-xl shadow-primary-500/10 py-0"
           : "bg-dark-600/95 backdrop-blur-md shadow-lg shadow-primary-500/20"
@@ -59,7 +59,7 @@ const Navbar = () => {
           {/* Mobile hamburger */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="sm:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-dark-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 transition-all duration-300"
+            className="lg:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-dark-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 transition-all duration-300"
             aria-label="Toggle menu"
             aria-expanded={isOpen}
           >
@@ -73,7 +73,7 @@ const Navbar = () => {
           </button>
 
           {/* Desktop links */}
-          <div className="hidden sm:flex sm:items-center sm:space-x-6 lg:space-x-8">
+          <div className="hidden">
             {navItems.map((item) => (
               <Link
                 key={item.name}
@@ -94,7 +94,7 @@ const Navbar = () => {
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="sm:hidden border-t border-primary-500/10">
+        <div className="lg:hidden border-t border-primary-500/10">
           <div className="px-2 pt-2 pb-3 space-y-1 bg-dark-700/98 backdrop-blur-md">
             {navItems.map((item) => (
               <Link

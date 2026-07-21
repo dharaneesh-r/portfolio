@@ -17,7 +17,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SEO from "./SEO";
 import { gsap } from "gsap";
 import { FaGithub, FaLinkedin, FaEnvelope, FaArrowRightLong } from "react-icons/fa6";
@@ -211,6 +211,7 @@ const ROLES = [
 const Home = () => {
   const [roleIdx, setRoleIdx] = useState(0);
   const heroRef = useRef(null);
+  const navigate = useNavigate();
   const prefersReduced = useReducedMotion();
   const lenis = useLenis();
 
@@ -300,6 +301,14 @@ const Home = () => {
         title="Dharaneesh R | Full-Stack Engineer" 
         description="Portfolio of Dharaneesh R, a Full-Stack Engineer building scalable web experiences with modern technologies." 
       />
+
+      <div 
+        onDoubleClick={() => navigate('/aboutme')} 
+        className="absolute top-24 right-8 z-50 px-4 py-2 border border-white/20 bg-dark-800/80 rounded-xl text-white/50 text-sm cursor-pointer hover:bg-dark-700/80 hover:text-white/80 transition-all select-none hidden lg:block hero-top"
+      >
+        Double click to move to the next page
+      </div>
+
       {/* ── Gradient overlay ──────────────────────────────────────── */}
       <div
         className="hero-grad absolute inset-0 z-[1] pointer-events-none"
