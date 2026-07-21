@@ -18,6 +18,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import SEO from "./SEO";
 import { gsap } from "gsap";
 import { FaGithub, FaLinkedin, FaEnvelope, FaArrowRightLong } from "react-icons/fa6";
 import { personalInfo } from "../data/personal";
@@ -295,6 +296,10 @@ const Home = () => {
       ref={heroRef}
       className="fixed inset-0 z-0 overflow-hidden bg-dark-900 select-none"
     >
+      <SEO 
+        title="Dharaneesh R | Full-Stack Engineer" 
+        description="Portfolio of Dharaneesh R, a Full-Stack Engineer building scalable web experiences with modern technologies." 
+      />
       {/* ── Gradient overlay ──────────────────────────────────────── */}
       <div
         className="hero-grad absolute inset-0 z-[1] pointer-events-none"

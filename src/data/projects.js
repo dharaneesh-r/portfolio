@@ -1,6 +1,42 @@
 // Enhanced project portfolio with detailed information
 export const projects = [
     {
+        id: 7,
+        title: "Scrolla.in",
+        tagline: "The AI Typography Ad Engine for Viral Growth",
+        category: "Full Stack",
+        featured: true,
+        thumbnail: null,
+        screenshots: [],
+        description: "Built the ultimate AI video ad engine for TikTok, Meta, and YouTube Shorts. Scrolla.in allows users to create high-converting, Apple-style kinetic typography ads in under 60 seconds without complex editing software.",
+        problem: "Traditional video production is too slow and generic templates don't convert for short-form video ads.",
+        solution: "Engineered an AI platform that choreographs kinetic typography synchronized with audio beats to maximize click-through rates.",
+        myRole: "Co-Founder",
+        techStack: [
+            { name: "Next.js", icon: "SiNextdotjs" },
+            { name: "React", icon: "FaReact" },
+            { name: "TailwindCSS", icon: "SiTailwindcss" }
+        ],
+        features: [
+            "AI Script-to-Video Engine",
+            "Apple Minimalist Kinetic Typography",
+            "Auto-sync Music & Voiceover",
+            "High-converting Viral Ad Templates"
+        ],
+        challenges: [],
+        results: {
+            metrics: []
+        },
+        links: {
+            github: null,
+            live: "https://scrolla.in",
+            caseStudy: null
+        },
+        date: "2024-05",
+        duration: "Ongoing",
+        teamSize: 2
+    },
+    {
         id: 1,
         title: "Newwss",
         tagline: "Real-time news aggregation platform",
@@ -115,7 +151,7 @@ export const projects = [
 
         links: {
             github: null,
-            live: "https://auditpro-mauve.vercel.app/",
+            live: "https://auditpro-weld-three.vercel.app/",
             caseStudy: null
         },
 
@@ -162,7 +198,7 @@ export const projects = [
 
         links: {
             github: null,
-            live: "https://crypto-marketplace-ten.vercel.app/",
+            live: "https://crypto-marketplace-seven.vercel.app/",
             caseStudy: null
         },
 
@@ -171,50 +207,6 @@ export const projects = [
         teamSize: 1
     },
 
-    {
-        id: 4,
-        title: "Movie Booking Application",
-        tagline: "Seamless cinema ticket booking experience",
-        category: "Frontend",
-        featured: false,
-        thumbnail: null,
-        screenshots: [],
-        description: "A fully responsive, front-end web app designed to simulate a seamless cinema ticket booking experience. Built entirely with React, styled using Tailwind CSS, and powered by JSON data.",
-
-        problem: "Users need an intuitive interface to browse movies, select seats, and book tickets without backend complexity.",
-        solution: "Created a fully functional frontend application with seat selection, booking flow, and payment simulation using React state management.",
-        myRole: "Frontend development, UI/UX design, state management",
-
-        techStack: [
-            { name: "React", icon: "FaReact" },
-            { name: "TailwindCSS", icon: "SiTailwindcss" }
-        ],
-
-        features: [
-            "Movie browsing and details",
-            "Interactive seat selection",
-            "Booking flow simulation",
-            "Responsive design",
-            "Local state persistence"
-        ],
-
-        challenges: [],
-
-        results: {
-            users: "500+",
-            metrics: []
-        },
-
-        links: {
-            github: null,
-            live: "https://movie-booking-application-eight.vercel.app/",
-            caseStudy: null
-        },
-
-        date: "2023-01",
-        duration: "1.5 months",
-        teamSize: 1
-    },
 
     {
         id: 5,

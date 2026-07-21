@@ -10,6 +10,7 @@ import { skillCategories } from "../data/skills";
 import { FaCode, FaServer, FaCloud, FaTools } from "react-icons/fa";
 import { useReducedMotion } from "../context/ReducedMotionContext";
 import SkillsGraph from "./ui/SkillsGraph";
+import SEO from "./SEO";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -361,7 +362,10 @@ const Skills = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#0a0a0a" }}>
-
+      <SEO 
+        title="Skills & Tech Stack | Dharaneesh R" 
+        description="Explore the technical skills, tools, and technologies used by Dharaneesh R." 
+      />
       {/* ── HERO ───────────────────────────────────────────────────── */}
       <section className="pt-24 pb-16 px-6 sm:px-10 lg:px-20 xl:px-28">
         <div className="max-w-7xl mx-auto">

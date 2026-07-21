@@ -8,6 +8,7 @@ import {
 import { projects, projectCategories } from "../data/projects";
 import { useReducedMotion } from "../context/ReducedMotionContext";
 import GsapButton from "./ui/GsapButton";
+import SEO from "./SEO";
 import { EASE, DUR } from "../motion/tokens";
 
 // gsap.registerPlugin called once in main.jsx
@@ -534,7 +535,10 @@ const Projects = () => {
 
   return (
     <div ref={pageRef} className="min-h-screen bg-dark-900 relative overflow-x-hidden">
-
+      <SEO 
+        title="Projects | Dharaneesh R" 
+        description="View the portfolio and past projects of Dharaneesh R." 
+      />
       {/* ── Background decoration ──────────────────────────────────────── */}
       <div className="fixed inset-0 pointer-events-none -z-10">
         <div className="absolute top-40 -left-20 w-[600px] h-[600px] rounded-full bg-primary-500/5 blur-[140px]" />

@@ -10,6 +10,7 @@ import { personalInfo } from "../data/personal";
 import MagneticWrapper from "./ui/MagneticWrapper";
 import GsapButton from "./ui/GsapButton";
 import SocialIcon from "./ui/SocialIcon";
+import SEO from "./SEO";
 import { useReducedMotion } from "../context/ReducedMotionContext";
 import { EASE, DUR } from "../motion/tokens";
 
@@ -215,6 +216,10 @@ const Contact = () => {
 
   return (
     <div ref={pageRef} className="min-h-screen bg-dark-900 relative overflow-hidden">
+      <SEO 
+        title="Contact | Dharaneesh R" 
+        description="Get in touch with Dharaneesh R for opportunities, collaborations, or just to say hi." 
+      />
       {/* Subtle background glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-32 left-0 w-[600px] h-[600px] bg-primary-500/5 rounded-full blur-[120px]" />

@@ -10,6 +10,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import SEO from "./SEO";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
@@ -780,7 +781,10 @@ const AboutMe = () => {
 
   return (
     <div ref={pageRef} className="min-h-screen bg-dark-900 relative overflow-x-hidden">
-
+      <SEO 
+        title="About Me | Dharaneesh R" 
+        description="Learn more about Dharaneesh R's background, skills, and experience as a Full-Stack developer." 
+      />
       {/* ── Background decoration ──────────────────────────────────── */}
       <div className="fixed inset-0 pointer-events-none -z-10">
         <div className="about-orb absolute top-40 -left-20 w-[600px] h-[600px] rounded-full bg-primary-500/5 blur-[140px]" />
