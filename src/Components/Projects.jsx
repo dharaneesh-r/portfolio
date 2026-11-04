@@ -446,19 +446,22 @@ const ProjectModal = ({ project, onClose }) => {
 //  MAIN COMPONENT
 // ════════════════════════════════════════════════════════════════════
 const Projects = () => {
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedProject, setSelectedProject] = useState(null);
   const pageRef = useRef(null);
   const gridRef = useRef(null);
   const reduced = useReducedMotion();
 
   const filteredProjects =
-    selectedCategory === "All"
+    selectedCategory === "all"
       ? projects
-      : projects.filter((p) => p.category === selectedCategory);
+      : selectedCategory === "featured"
+      ? projects.filter((p) => p.featured)
+      : projects.filter(
+          (p) => p.categoryKey === selectedCategory || p.category === selectedCategory
+        );
 
   const featuredCount = projects.filter((p) => p.featured).length;
-  const allCategories = ["All", ...projectCategories];
 
   // ── Page entrance animations ────────────────────────────────────────
   useEffect(() => {
@@ -525,7 +528,7 @@ const Projects = () => {
           }
         );
       });
-    }, pageRef);
+    });
 
     return () => ctx.revert();
   }, [reduced]);
@@ -643,17 +646,17 @@ const Projects = () => {
           </div>
 
           <div className="proj-filters flex flex-wrap gap-2 sm:gap-3">
-            {allCategories.map((cat) => (
+            {projectCategories.map((cat) => (
               <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
                 className={`proj-filter-btn px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-mono text-[10px] sm:text-xs font-bold tracking-widest uppercase transition-all duration-300 ${
-                  selectedCategory === cat
+                  selectedCategory === cat.id
                     ? "bg-primary-500 text-white shadow-[0_0_24px_rgba(249,115,22,0.4)]"
                     : "border border-white/10 text-white/40 hover:text-white/70 hover:border-white/20 bg-white/[0.02]"
                 }`}
               >
-                {cat}
+                {cat.name}
               </button>
             ))}
           </div>
@@ -673,7 +676,7 @@ const Projects = () => {
                 className="font-heading font-black text-xl sm:text-2xl text-white tracking-tight"
                 delay={150}
               >
-                {selectedCategory === "All" ? "All Projects" : `${selectedCategory} Projects`}
+                {projectCategories.find((c) => c.id === selectedCategory)?.name || "All Projects"}
               </ScrambleHeading>
             </div>
             <div className="flex-1 h-px bg-gradient-to-r from-primary-500/25 to-transparent mb-1.5" />
