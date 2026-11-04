@@ -2,23 +2,6 @@
  * data/skillsGraph.js — Knowledge-graph context for the Skills page
  * ─────────────────────────────────────────────────────────────────
  * Single source of truth for the 3D skill knowledge graph.
- *
- * The graph is built from `skillCategories` (src/data/skills.js) so we
- * never duplicate skill names, levels, or colours. This file only adds
- * the *relationships* between technologies — the edges that turn a flat
- * skill list into a connected knowledge graph.
- *
- * Node types:
- *   root      → the developer (single hub node)
- *   category  → Frontend / Backend / DevOps / Tools
- *   skill     → individual technology (sized by proficiency)
- *
- * Link kinds:
- *   root      → root → category        (skeleton, strong springs)
- *   category  → category → skill        (skeleton, strong springs)
- *   related   → skill ↔ skill           (real-world affinity, soft springs)
- *
- * Consumed by: Components/ui/SkillsGraph.jsx
  */
 
 import { skillCategories } from "./skills";
@@ -31,45 +14,56 @@ export const ROOT_NODE = {
   color: "#f97316",
 };
 
-// ── Short titles for category nodes (strip "Development" / "& Cloud") ─
+// ── Short titles for category nodes ──────────────────────────────────
 const shortTitle = (title) =>
-  title.replace(" Development", "").replace(" & Cloud", "");
+  title.replace(" Development", "").replace(" & Systems", "").replace(" & Storage", "").replace(" & DevOps", "").replace(" & Tools", "");
 
 // ── Real-world technology relationships (cross-links) ────────────────
-// Each pair references skill `name`s exactly as they appear in skills.js.
-// Pairs whose endpoints don't both exist are silently skipped at build
-// time, so this list is safe to extend without breaking the graph.
 export const SKILL_RELATIONSHIPS = [
-  // Frontend internal
-  ["HTML", "CSS"],
-  ["CSS", "TailwindCSS"],
+  // Languages & Core
+  ["JavaScript", "TypeScript"],
   ["JavaScript", "React.js"],
+  ["TypeScript", "React.js"],
+  ["TypeScript", "Node.js"],
+  ["Java", "SQL"],
+  ["Go", "WebSockets"],
+  ["Go", "Docker"],
+
+  // Frontend internal
   ["React.js", "Next.js"],
+  ["React.js", "Redux"],
   ["React.js", "TailwindCSS"],
   ["React.js", "GSAP"],
 
-  // Frontend ↔ Backend (the MERN spine)
+  // Frontend ↔ Backend
   ["JavaScript", "Node.js"],
   ["Next.js", "Node.js"],
-  ["React.js", "Firebase"],
+  ["React.js", "Express.js"],
+  ["React.js", "WebSockets"],
 
   // Backend internal
   ["Node.js", "Express.js"],
-  ["Express.js", "MongoDB"],
+  ["Node.js", "NestJS"],
+  ["Node.js", "NATS JetStream"],
   ["Node.js", "MongoDB"],
+  ["Express.js", "MongoDB"],
+  ["Node.js", "DynamoDB"],
+  ["Node.js", "Redis"],
+  ["NestJS", "PostgreSQL"],
 
-  // Backend ↔ DevOps
+  // Backend ↔ Cloud / DevOps
   ["Node.js", "Docker"],
   ["Node.js", "AWS"],
-
-  // DevOps internal
+  ["AWS", "DynamoDB"],
   ["Docker", "Kubernetes"],
-  ["AWS", "Docker"],
+  ["Docker", "AWS"],
+  ["AWS", "CI/CD & Actions"],
 
-  // Tooling reach
-  ["Git/GitHub", "Docker"],
-  ["Postman", "Express.js"],
-  ["Git/GitHub", "React.js"],
+  // Tooling & Testing
+  ["Vitest", "TypeScript"],
+  ["Git", "CI/CD & Actions"],
+  ["Observability", "AWS"],
+  ["Observability", "Docker"]
 ];
 
 /**
@@ -98,28 +92,27 @@ export function buildSkillGraph() {
 
     cat.skills.forEach((sk) => {
       nodes.push({
-        id:       sk.name,
-        label:    sk.name,
-        type:     "skill",
-        category: key,
-        color:    cat.color,
-        level:    sk.level,
-        // Size skills by proficiency so stronger skills read as larger hubs
-        val:      0.85 + (sk.level / 100) * 0.85,
+        id:          sk.name,
+        label:       sk.name,
+        type:        "skill",
+        category:    key,
+        color:       cat.color,
+        level:       sk.level,
+        yearsExp:    sk.yearsExp,
+        description: sk.description,
+        val:         1.0 + (sk.level / 100) * 0.8,
       });
       links.push({ source: catId, target: sk.name, kind: "category" });
     });
   });
 
-  // Cross-links — only keep pairs where both endpoints exist
-  const ids = new Set(nodes.map((n) => n.id));
-  SKILL_RELATIONSHIPS.forEach(([a, b]) => {
-    if (ids.has(a) && ids.has(b)) {
-      links.push({ source: a, target: b, kind: "related" });
+  const nodeMap = new Map(nodes.map((n) => [n.id, n]));
+
+  SKILL_RELATIONSHIPS.forEach(([src, tgt]) => {
+    if (nodeMap.has(src) && nodeMap.has(tgt)) {
+      links.push({ source: src, target: tgt, kind: "related" });
     }
   });
 
   return { nodes, links };
 }
-
-export default buildSkillGraph;

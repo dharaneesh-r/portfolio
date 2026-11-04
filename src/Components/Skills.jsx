@@ -7,12 +7,12 @@ import { useEffect, useState, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { skillCategories } from "../data/skills";
-import { FaCode, FaServer, FaCloud, FaTools } from "react-icons/fa";
+import { FaCode, FaServer, FaCloud, FaTools, FaTerminal, FaDatabase } from "react-icons/fa";
 import { useReducedMotion } from "../context/ReducedMotionContext";
 import SkillsGraph from "./ui/SkillsGraph";
 import SEO from "./SEO";
 
-gsap.registerPlugin(ScrollTrigger);
+
 
 // ── Scramble heading (copied from Aboutme.jsx) ────────────────────────
 const ScrambleHeading = ({ children, className = "", delay = 0 }) => {
@@ -106,8 +106,10 @@ const CircleProgress = ({ pct, label, icon: Icon, color }) => {
 
 // ── Category config ───────────────────────────────────────────────────
 const CATEGORY_ICONS = {
+  languages: FaTerminal,
   frontend: FaCode,
   backend: FaServer,
+  databases: FaDatabase,
   devops: FaCloud,
   tools: FaTools,
 };
@@ -248,7 +250,7 @@ const Skills = () => {
     { value: totalSkills, suffix: "+", label: "Total Skills" },
     { value: avgProficiency, suffix: "%", label: "Avg Proficiency" },
     { value: totalCategories, suffix: "", label: "Categories" },
-    { value: "1yr", suffix: "+", label: "Experience" },
+    { value: "1.6", suffix: " yrs", label: "Production Exp" },
   ];
 
   // Hero animation on mount

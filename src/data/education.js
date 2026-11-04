@@ -5,25 +5,23 @@ export const education = [
     degree: "Master of Computer Applications (MCA)",
     field: "Computer Applications",
     institution: "RVS College of Engineering and Technology",
-    location: "India",
+    location: "Coimbatore, India",
     startYear: 2024,
     endYear: 2026,
-    duration: "2024 - 2026",
-    status: "Flexible Program | Pursuing",
-    grade: "",
-    description: "Pursuing advanced studies in software development with focus on full-stack development and cloud technologies",
+    duration: "Aug 2024 - May 2026",
+    status: "Pursuing",
+    grade: "CGPA 8.4/10",
+    description: "Pursuing MCA with a focus on advanced computing, scalable full-stack web architectures, and data structures & algorithms.",
     achievements: [
-      "Balancing professional work with academic excellence",
-      "Focus on advanced software engineering practices",
-      "Specializing in cloud computing and microservices architecture"
+      "CGPA 8.4 / 10",
+      "Specializing in distributed systems, web development, and cloud services",
+      "Active LeetCode problem solver (1500+ rating in Java DSA)"
     ],
     coursework: [
-      "Advanced Data Structures",
-      "Software Engineering",
-      "Cloud Computing",
-      "Database Management Systems",
-      "Web Technologies",
-      "Distributed Systems"
+      "Data Structures and Algorithms",
+      "Full-Stack Web Development",
+      "Object-Oriented Programming",
+      "Database Management Systems"
     ],
     activities: []
   },
@@ -32,19 +30,22 @@ export const education = [
     degree: "Bachelor of Commerce (B.Com)",
     field: "Commerce",
     institution: "KG College of Arts and Science",
-    location: "Perundurai, India",
+    location: "Coimbatore, India",
     startYear: 2021,
     endYear: 2024,
     duration: "2021 - 2024",
     status: "Completed",
     grade: "Percentage: 80%",
-    description: "Successfully completed degree while exploring technology and transitioning to software development",
+    description: "Completed undergraduate degree with strong academic standing while mastering programming fundamentals and full-stack software development.",
     achievements: [
-      "Graduated with 80% marks",
-      "Developed strong analytical and problem-solving skills",
-      "Successfully transitioned to software development during final year"
+      "Graduated with 80% aggregate",
+      "Transitioned into professional software engineering with hands-on MERN & Cloud proficiencies"
     ],
-    coursework: [],
+    coursework: [
+      "Analytical Problem Solving",
+      "Information Systems",
+      "Quantitative Techniques"
+    ],
     activities: []
   }
 ];

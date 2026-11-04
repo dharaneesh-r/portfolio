@@ -65,13 +65,13 @@ const TECH_META = {
   "React.js":      { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",             color: "#61dafb" },
   "Redux":         { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redux/redux-original.svg",             color: "#764abc" },
   "MongoDB":       { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg",         color: "#4db33d" },
-  "DynamoDB":      { icon: "https://cdn.simpleicons.org/amazondynamodb/ff9900",                                        color: "#ff9900" },
-  "AWS EC2":       { icon: "https://cdn.simpleicons.org/amazonec2/ff9900",                                             color: "#ff9900" },
-  "AWS S3":        { icon: "https://cdn.simpleicons.org/amazons3/ff9900",                                              color: "#ff9900" },
-  "AWS ECS":       { icon: "https://cdn.simpleicons.org/amazonaws/ff9900",                                             color: "#ff9900" },
-  "CloudWatch":    { icon: "https://cdn.simpleicons.org/amazoncloudwatch/ff4f8b",                                      color: "#ff4f8b" },
-  "Elasticsearch": { icon: "https://cdn.simpleicons.org/elastic/4eb6b2",                                               color: "#4eb6b2" },
-  "Kibana":        { icon: "https://cdn.simpleicons.org/kibana/e8488a",                                                color: "#e8488a" },
+  "DynamoDB":      { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg", color: "#ff9900" },
+  "AWS EC2":       { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg", color: "#ff9900" },
+  "AWS S3":        { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg", color: "#ff9900" },
+  "AWS ECS":       { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg", color: "#ff9900" },
+  "CloudWatch":    { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg", color: "#ff4f8b" },
+  "Elasticsearch": { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/elasticsearch/elasticsearch-original.svg", color: "#4eb6b2" },
+  "Kibana":        { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kibana/kibana-original.svg", color: "#e8488a" },
   "Docker":        { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg",           color: "#2496ed" },
   "Kubernetes":    { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg",      color: "#326ce5" },
   "GitHub Actions":{ icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg",          color: "#e2e8f0", invert: true },
@@ -387,163 +387,217 @@ const TechGlobe = ({ reduced }) => {
 // based on cursor position relative to the card centre on mousemove,
 // and springs back elastically on mouseleave.
 // A specular highlight layer moves counter to the tilt to fake a
-// glossy surface reflection.
+// ════════════════════════════════════════════════════════════
+//  Studio Portrait Card
+//  GSAP Curtain Reveal on Scroll + Multi-plane Magnetic Parallax.
+// ════════════════════════════════════════════════════════════
 const ProfilePhoto3D = () => {
+  const containerRef = useRef(null);
   const wrapRef      = useRef(null);
+  const imgRef       = useRef(null);
   const glareRef     = useRef(null);
   const badgeRef     = useRef(null);
+  const curtainRef   = useRef(null);
+  const reduced      = useReducedMotion();
 
+  // ── GSAP Scroll-Triggered Curtain Reveal on Entry ───────────────
+  useEffect(() => {
+    if (reduced) return;
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start:   "top 82%",
+          once:    true,
+        },
+      });
+
+      if (curtainRef.current) {
+        tl.fromTo(
+          curtainRef.current,
+          { yPercent: 0 },
+          { yPercent: -100, duration: 1.1, ease: "power4.inOut" }
+        );
+      }
+      if (imgRef.current) {
+        tl.fromTo(
+          imgRef.current,
+          { scale: 1.15 },
+          { scale: 1.0, duration: 1.2, ease: "power3.out" },
+          "<"
+        );
+      }
+      if (badgeRef.current) {
+        tl.fromTo(
+          badgeRef.current,
+          { opacity: 0, y: -15, scale: 0.9 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "back.out(1.7)" },
+          "-=0.4"
+        );
+      }
+    });
+
+    return () => ctx.revert();
+  }, [reduced]);
+
+  // ── GSAP 3D Magnetic Parallax on Mouse Move ─────────────────────
   const onMove = (e) => {
-    const el   = wrapRef.current;
+    if (reduced) return;
+    const el = wrapRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
     const cx   = ((e.clientX - rect.left)  / rect.width  - 0.5) * 2;   // -1 → 1
     const cy   = ((e.clientY - rect.top)   / rect.height - 0.5) * 2;
 
+    // 1. Tilt card in 3D
     gsap.to(el, {
-      rotateY:             cx * 20,
-      rotateX:            -cy * 20,
-      duration:            0.4,
+      rotateY:             cx * 14,
+      rotateX:            -cy * 14,
+      duration:            0.35,
       ease:                "power2.out",
-      transformPerspective: 900,
+      transformPerspective: 1000,
       transformOrigin:     "center center",
     });
 
-    // Glare follows cursor inversely
-    if (glareRef.current) {
-      gsap.to(glareRef.current, {
-        x:        cx * -28,
-        y:        cy * -28,
-        opacity:  0.18 + Math.abs(cx) * 0.12 + Math.abs(cy) * 0.12,
-        duration: 0.4,
-        ease:     "power2.out",
+    // 2. Inner portrait counter-parallax (depth illusion)
+    if (imgRef.current) {
+      gsap.to(imgRef.current, {
+        x: -cx * 14,
+        y: -cy * 14,
+        duration: 0.35,
+        ease: "power2.out",
       });
     }
 
-    // Badge floats forward slightly
+    // 3. Crisp monochromatic specular glare
+    if (glareRef.current) {
+      gsap.to(glareRef.current, {
+        x:       cx * -30,
+        y:       cy * -30,
+        opacity: 0.12 + (Math.abs(cx) + Math.abs(cy)) * 0.08,
+        duration: 0.35,
+        ease:    "power2.out",
+      });
+    }
+
+    // 4. Floating badge micro-parallax
     if (badgeRef.current) {
       gsap.to(badgeRef.current, {
-        x:        cx * -8,
-        y:        cy * -8,
+        x: cx * -8,
+        y: cy * -8,
         duration: 0.4,
-        ease:     "power2.out",
+        ease: "power2.out",
       });
     }
   };
 
   const onLeave = () => {
+    if (reduced) return;
     gsap.to(wrapRef.current, {
-      rotateY: 0, rotateX: 0,
+      rotateY: 0,
+      rotateX: 0,
       duration: 1.0,
-      ease:     "elastic.out(1, 0.4)",
+      ease: "elastic.out(1, 0.4)",
     });
-    gsap.to(glareRef.current,  { opacity: 0, x: 0, y: 0, duration: 0.6 });
-    gsap.to(badgeRef.current,  { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.4)" });
+    if (imgRef.current) {
+      gsap.to(imgRef.current, {
+        x: 0,
+        y: 0,
+        duration: 1.0,
+        ease: "elastic.out(1, 0.4)",
+      });
+    }
+    if (glareRef.current) {
+      gsap.to(glareRef.current, { opacity: 0, x: 0, y: 0, duration: 0.5 });
+    }
+    if (badgeRef.current) {
+      gsap.to(badgeRef.current, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.4)" });
+    }
   };
 
   return (
-    <div className="sphere-wrap lg:col-span-2 flex items-center justify-center">
-      <div className="relative w-full max-w-xs lg:max-w-sm mx-auto" style={{ perspective: "900px" }}>
+    <div ref={containerRef} className="sphere-wrap lg:col-span-2 flex items-center justify-center">
+      <div className="relative w-full max-w-[280px] sm:max-w-xs lg:max-w-[320px] mx-auto py-4" style={{ perspective: "1000px" }}>
 
-        {/* Ambient glow behind the card */}
-        <div
-          className="absolute -inset-6 rounded-3xl pointer-events-none"
-          style={{
-            background:  "radial-gradient(ellipse 80% 80% at 50% 60%, rgba(249,115,22,0.28) 0%, transparent 70%)",
-            filter:      "blur(18px)",
-          }}
-        />
-
-        {/* 3D tilt card */}
+        {/* 3D Tilt Card Frame — Clean Matte Dark */}
         <div
           ref={wrapRef}
           onMouseMove={onMove}
           onMouseLeave={onLeave}
-          className="relative rounded-2xl overflow-hidden cursor-none select-none"
+          className="relative rounded-2xl overflow-hidden select-none bg-dark-900 border border-white/10 hover:border-white/25 transition-colors duration-500 shadow-2xl shadow-black/90 group"
           style={{
             transformStyle: "preserve-3d",
             willChange:     "transform",
-            boxShadow:
-              "0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(249,115,22,0.18), 0 8px 32px rgba(249,115,22,0.12)",
           }}
         >
-          {/* Photo */}
-          <img
-            src="/profile.jpg"
-            alt="Dharaneesh R"
-            draggable={false}
-            className="w-full block object-cover object-top"
-            style={{ aspectRatio: "3/4", minHeight: "340px", display: "block" }}
-          />
+          {/* Portrait Container */}
+          <div className="relative overflow-hidden bg-dark-800" style={{ aspectRatio: "3/4" }}>
+            <img
+              ref={imgRef}
+              src="/profile.jpg"
+              alt="Dharaneesh R - Full Stack Developer"
+              draggable={false}
+              className="w-full h-full block object-cover will-change-transform"
+              style={{
+                objectPosition: "50% 16%",
+              }}
+            />
 
-          {/* Gradient overlay — bottom fade */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(to top, rgba(5,5,5,0.92) 0%, rgba(5,5,5,0.30) 40%, transparent 70%)",
-            }}
-          />
+            {/* GSAP Curtain Reveal Overlay */}
+            <div
+              ref={curtainRef}
+              className="portrait-curtain absolute inset-0 bg-dark-900 z-30 pointer-events-none"
+            />
 
-          {/* Specular glare layer */}
-          <div
-            ref={glareRef}
-            className="absolute inset-0 pointer-events-none rounded-2xl opacity-0"
-            style={{
-              background:
-                "radial-gradient(ellipse 60% 50% at 50% 30%, rgba(255,255,255,0.22) 0%, transparent 70%)",
-              mixBlendMode: "screen",
-            }}
-          />
+            {/* Monochromatic specular white glare reflection */}
+            <div
+              ref={glareRef}
+              className="absolute inset-0 pointer-events-none rounded-2xl opacity-0 z-20"
+              style={{
+                background:
+                  "radial-gradient(circle at 50% 30%, rgba(255,255,255,0.20) 0%, transparent 60%)",
+                mixBlendMode: "screen",
+              }}
+            />
 
-          {/* Name tag — translateZ lifts it above the photo */}
-          <div
-            className="absolute bottom-5 left-5 right-5 pointer-events-none"
-            style={{ transform: "translateZ(30px)" }}
-          >
-            <p className="font-mono text-[9px] tracking-[0.32em] text-primary-400/80 uppercase mb-1">
-              Full Stack Developer
-            </p>
-            <p className="font-heading font-black text-white text-base sm:text-lg tracking-wide leading-tight">
-              Dharaneesh R
-            </p>
+            {/* Subtle clean bottom dark fade for label */}
+            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-dark-900/95 via-dark-900/40 to-transparent pointer-events-none z-10" />
           </div>
 
-          {/* Top-right experience tag */}
+          {/* Lower Label */}
           <div
-            className="absolute top-4 right-4 px-2.5 py-1 rounded-lg bg-black/50 backdrop-blur-sm border border-primary-500/30 pointer-events-none"
-            style={{ transform: "translateZ(20px)" }}
+            className="absolute bottom-4 left-4 right-4 pointer-events-none flex items-end justify-between z-20"
+            style={{ transform: "translateZ(24px)" }}
           >
-            <p className="font-mono text-[9px] tracking-widest text-primary-400 uppercase">1yr+ exp</p>
+            <div>
+              <p className="font-mono text-[9px] tracking-[0.25em] text-white/50 uppercase font-semibold">
+                SDE-1 / SDE-2
+              </p>
+              <p className="font-heading font-black text-white text-base tracking-wide leading-tight">
+                Dharaneesh R
+              </p>
+            </div>
+            <span className="px-2.5 py-1 rounded-full font-mono text-[9px] tracking-wider text-white/80 bg-white/10 backdrop-blur-md border border-white/15">
+              1.6 Yrs Exp
+            </span>
           </div>
         </div>
 
-        {/* Available badge — floats above the card via ref */}
+        {/* Floating Top Status Badge */}
         <div
           ref={badgeRef}
-          className="absolute -top-3.5 left-5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-dark-900/95 border border-green-500/40 shadow-xl"
-          style={{ backdropFilter: "blur(8px)" }}
+          className="absolute -top-1 left-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-dark-900/95 border border-green-500/40 shadow-xl shadow-black/80 z-20 backdrop-blur-xl"
+          style={{ transform: "translateZ(30px)" }}
         >
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
           </span>
-          <span className="text-green-400 font-mono text-[9px] tracking-widest uppercase">Available for work</span>
+          <span className="text-green-400 font-mono text-[9px] tracking-widest uppercase font-semibold">
+            Open to Work
+          </span>
         </div>
 
-        {/* Corner brackets */}
-        {[
-          "top-0 left-0 border-t-2 border-l-2 rounded-tl-lg",
-          "top-0 right-0 border-t-2 border-r-2 rounded-tr-lg",
-          "bottom-0 left-0 border-b-2 border-l-2 rounded-bl-lg",
-          "bottom-0 right-0 border-b-2 border-r-2 rounded-br-lg",
-        ].map((cls, i) => (
-          <div
-            key={i}
-            className={`absolute w-7 h-7 border-primary-500/60 pointer-events-none ${cls}`}
-            style={{ transform: "translateZ(8px)" }}
-          />
-        ))}
       </div>
     </div>
   );
@@ -560,6 +614,7 @@ const StatCounter = ({ value, label, suffix = "" }) => {
     if (!trigger || !display) return;
 
     const numeric = parseFloat(value);
+    const hasDecimal = numeric % 1 !== 0;
     const obj = { val: 0 };
 
     const st = ScrollTrigger.create({
@@ -571,9 +626,9 @@ const StatCounter = ({ value, label, suffix = "" }) => {
           val:      numeric,
           duration: 1.8,
           ease:     "power2.out",
-          snap:     { val: 1 },
+          snap:     { val: hasDecimal ? 0.1 : 1 },
           onUpdate: () => {
-            display.textContent = Math.ceil(obj.val) + suffix;
+            display.textContent = (hasDecimal ? obj.val.toFixed(1) : Math.ceil(obj.val)) + suffix;
           },
         });
       },
@@ -719,16 +774,69 @@ const AboutMe = () => {
         });
       });
 
-      // ── 7. Education cards ────────────────────────────────────────
-      gsap.utils.toArray(".edu-card").forEach((el, i) => {
-        gsap.from(el, {
-          scrollTrigger: { trigger: el, start: "top 85%", once: true },
-          opacity: 0,
-          x:       i % 2 === 0 ? -70 : 70,
-          duration: reduced ? 0 : DUR.lg,
-          ease:    EASE.out,
+      // ── 7. Education timeline & cards ──────────────────────────
+      const eduSec = document.querySelector(".academic-section");
+      if (eduSec && !reduced) {
+        gsap.fromTo(
+          ".edu-timeline-line",
+          { scaleY: 0 },
+          {
+            scaleY: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: eduSec,
+              start: "top 78%",
+              end: "bottom 85%",
+              scrub: 0.6,
+            },
+          }
+        );
+
+        gsap.utils.toArray(".edu-node").forEach((node) => {
+          gsap.fromTo(
+            node,
+            { scale: 0, opacity: 0 },
+            {
+              scale: 1,
+              opacity: 1,
+              duration: 0.6,
+              ease: "back.out(2)",
+              scrollTrigger: { trigger: node, start: "top 85%", once: true },
+            }
+          );
         });
-      });
+
+        gsap.utils.toArray(".edu-card").forEach((card, i) => {
+          gsap.fromTo(
+            card,
+            { opacity: 0, y: 40 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.75,
+              delay: i * 0.12,
+              ease: "power3.out",
+              scrollTrigger: { trigger: card, start: "top 85%", once: true },
+            }
+          );
+
+          const chips = card.querySelectorAll(".edu-chip");
+          if (chips.length) {
+            gsap.fromTo(
+              chips,
+              { opacity: 0, y: 10 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.4,
+                stagger: 0.05,
+                ease: "power2.out",
+                scrollTrigger: { trigger: card, start: "top 80%", once: true },
+              }
+            );
+          }
+        });
+      }
 
       // ── 8. Highlight cards ────────────────────────────────────────
       gsap.utils.toArray(".highlight-card").forEach((el, i) => {
@@ -774,7 +882,7 @@ const AboutMe = () => {
         y: -100, x: 40, ease: "none",
       });
 
-    }, pageRef);
+    });
 
     return () => ctx.revert();
   }, [reduced]);
@@ -828,8 +936,8 @@ const AboutMe = () => {
 
             <div className="lg:pb-2 lg:max-w-md">
               <p className="about-hero-sub text-white/45 text-sm sm:text-base leading-relaxed mb-5">
-                Full-Stack Developer specialising in MERN, AWS &amp; Docker —
-                crafting enterprise-grade SaaS platforms that scale.
+                Full-Stack Developer with 1.6 years of production experience across React, Next.js, Node.js, and AWS —
+                architecting high-scale SaaS platforms, real-time tracking consoles, and developer tools.
               </p>
               <div className="flex items-center gap-2">
                 <span className="relative flex h-2 w-2">
@@ -837,7 +945,7 @@ const AboutMe = () => {
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
                 </span>
                 <span className="text-green-400 font-mono text-xs tracking-widest uppercase">
-                  Available for work
+                  Available for SDE-1 / SDE-2
                 </span>
               </div>
             </div>
@@ -848,10 +956,10 @@ const AboutMe = () => {
           {/* Stats */}
           <div className="about-hero-sub mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             {[
-              { value: "1",   suffix: "yr+", label: "Experience" },
-              { value: "15",  suffix: "+",   label: "Projects"   },
-              { value: "2",   suffix: "",    label: "Companies"  },
-              { value: "100", suffix: "%",   label: "Dedicated"  },
+              { value: "1.6",  suffix: " yrs", label: "Production Exp" },
+              { value: "500",  suffix: "K+",   label: "Daily API Requests" },
+              { value: "1500", suffix: "+",    label: "LeetCode Rating" },
+              { value: "99.9", suffix: "%",    label: "Uptime Maintained" },
             ].map((s) => (
               <div key={s.label} className="rounded-xl border border-white/6 bg-white/[0.02] px-4 py-3 sm:px-5 sm:py-4">
                 <StatCounter value={s.value} suffix={s.suffix} label={s.label} />
@@ -1079,10 +1187,11 @@ const AboutMe = () => {
       {/* ════════════════════════════════════════════════════════════
           SECTION 4 — ACADEMIC PATH
       ════════════════════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-24 px-6 sm:px-10 lg:px-20 xl:px-28">
+      <section className="academic-section py-20 sm:py-28 px-6 sm:px-10 lg:px-20 xl:px-28 relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
 
-          <div className="flex items-end gap-6 mb-14 sm:mb-20">
+          {/* Section Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 sm:mb-20">
             <div>
               <p className="font-mono text-[10px] tracking-[0.35em] text-primary-500/60 uppercase mb-2">— 03</p>
               <ScrambleHeading
@@ -1091,65 +1200,120 @@ const AboutMe = () => {
               >
                 Academic Path
               </ScrambleHeading>
+              <p className="text-white/40 font-mono text-xs sm:text-sm mt-3 max-w-xl">
+                Foundations in Computer Applications, Advanced Data Structures &amp; Distributed Systems.
+              </p>
             </div>
-            <div className="flex-1 h-px bg-gradient-to-r from-primary-500/30 to-transparent mb-3" />
+            <div className="hidden md:block flex-1 max-w-xs h-px bg-gradient-to-r from-primary-500/30 to-transparent mb-3" />
           </div>
 
-          <div className="space-y-8 sm:space-y-10">
-            {education.map((edu, i) => (
-              <div key={edu.id} className={`edu-card relative group ${i % 2 !== 0 ? "lg:ml-24" : ""}`}>
-                <div
-                  className="pointer-events-none absolute -left-2 sm:-left-4 top-1/2 -translate-y-1/2 font-heading font-black select-none leading-none"
-                  style={{
-                    fontSize: "clamp(80px, 15vw, 180px)",
-                    color: "transparent",
-                    WebkitTextStroke: "1px rgba(249,115,22,0.10)",
-                  }}
-                >
-                  {edu.startYear}
-                </div>
+          {/* Vertical Timeline Container */}
+          <div className="relative pl-6 sm:pl-10 lg:pl-12">
+            {/* Continuous Vertical Glowing Line */}
+            <div className="absolute left-2.5 sm:left-4 top-4 bottom-8 w-0.5 bg-gradient-to-b from-primary-500 via-primary-500/40 to-white/5 edu-timeline-line origin-top" />
 
-                <div className="relative z-10 rounded-2xl border border-white/6 bg-white/[0.02] hover:bg-white/[0.04] hover:border-primary-500/20 transition-all duration-500 p-6 sm:p-8 lg:p-10 ml-16 sm:ml-20 lg:ml-28">
-                  <div className="flex items-center gap-3 flex-wrap mb-4">
-                    <span className={`px-3 py-1 rounded-full font-mono text-[9px] tracking-widest uppercase border ${
-                      edu.status.includes("Pursuing")
-                        ? "bg-blue-500/10 text-blue-400 border-blue-500/30"
-                        : "bg-green-500/10 text-green-400 border-green-500/30"
-                    }`}>
-                      {edu.status}
-                    </span>
-                    <span className="text-white/25 font-mono text-xs">{edu.startYear} – {edu.endYear}</span>
+            <div className="space-y-12 sm:space-y-16">
+              {education.map((edu, i) => (
+                <div key={edu.id} className="relative group">
+                  {/* Glowing Timeline Milestone Node */}
+                  <div className="edu-node absolute -left-[27px] sm:-left-[33px] top-6 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-dark-900 border-2 border-primary-500 flex items-center justify-center shadow-lg shadow-primary-500/40 z-20">
+                    {edu.status.includes("Pursuing") ? (
+                      <span className="relative flex h-2.5 w-2.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary-500" />
+                      </span>
+                    ) : (
+                      <span className="w-2 h-2 rounded-full bg-green-400" />
+                    )}
                   </div>
 
-                  <h3 className="font-heading font-bold text-xl sm:text-2xl lg:text-3xl text-white mb-1 group-hover:text-primary-300 transition-colors duration-300">
-                    {edu.degree}
-                  </h3>
-                  <p className="text-primary-500 font-semibold text-sm sm:text-base mb-1 flex items-center gap-2 flex-wrap">
-                    <FaGraduationCap className="text-xs opacity-70" />
-                    {edu.institution}
-                  </p>
-                  <p className="text-white/30 text-xs sm:text-sm mb-5 flex items-center gap-1.5">
-                    <FaMapMarkerAlt className="text-primary-500/60 text-xs" />
-                    {edu.location}
-                  </p>
+                  {/* Card Content */}
+                  <div className="edu-card relative rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] hover:border-primary-500/30 backdrop-blur-xl p-6 sm:p-8 lg:p-10 transition-all duration-500 shadow-xl shadow-black/40 group overflow-hidden">
+                    {/* Top ambient corner glow */}
+                    <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-primary-500/20 transition-all duration-500" />
 
-                  <p className="text-white/45 text-sm sm:text-base leading-relaxed mb-6">{edu.description}</p>
+                    {/* Meta Bar */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-6 border-b border-white/6 pb-4">
+                      <div className="flex items-center gap-2.5 flex-wrap">
+                        <span className={`px-3 py-1 rounded-full font-mono text-[10px] tracking-widest uppercase font-semibold border flex items-center gap-1.5 ${
+                          edu.status.includes("Pursuing")
+                            ? "bg-primary-500/12 text-primary-400 border-primary-500/30"
+                            : "bg-green-500/12 text-green-400 border-green-500/30"
+                        }`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${edu.status.includes("Pursuing") ? "bg-primary-400 animate-pulse" : "bg-green-400"}`} />
+                          {edu.status}
+                        </span>
 
-                  {edu.coursework?.length > 0 && (
-                    <div>
-                      <p className="font-mono text-[9px] tracking-[0.3em] text-white/25 uppercase mb-3">Coursework</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {edu.coursework.map((c, idx) => (
-                          <span key={idx} className="px-2.5 py-1 text-[10px] sm:text-xs font-mono text-white/40 bg-white/4 border border-white/8 rounded hover:border-primary-500/30 hover:text-primary-400 transition-all">
-                            {c}
+                        {edu.grade && (
+                          <span className="px-3 py-1 rounded-full font-mono text-[10px] tracking-wider text-amber-300 bg-amber-400/10 border border-amber-400/20 font-bold">
+                            {edu.grade}
                           </span>
-                        ))}
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-4 text-white/50 font-mono text-xs flex-wrap">
+                        <span className="flex items-center gap-1.5 text-white/70">
+                          <FaCalendarAlt className="text-primary-500 text-xs" />
+                          {edu.duration}
+                        </span>
+                        <span className="hidden sm:inline text-white/20">•</span>
+                        <span className="flex items-center gap-1.5 text-white/60">
+                          <FaMapMarkerAlt className="text-primary-500 text-xs" />
+                          {edu.location}
+                        </span>
                       </div>
                     </div>
-                  )}
+
+                    {/* Degree Title & Institution */}
+                    <div className="mb-4">
+                      <h3 className="font-heading font-black text-2xl sm:text-3xl text-white mb-2 tracking-tight group-hover:text-primary-300 transition-colors duration-300">
+                        {edu.degree}
+                      </h3>
+                      <p className="text-primary-500 font-semibold text-base sm:text-lg flex items-center gap-2">
+                        <FaGraduationCap className="text-primary-400" />
+                        {edu.institution}
+                      </p>
+                    </div>
+
+                    <p className="text-white/60 text-sm sm:text-base leading-relaxed mb-6 max-w-3xl">
+                      {edu.description}
+                    </p>
+
+                    {/* Achievements */}
+                    {edu.achievements?.length > 0 && (
+                      <div className="mb-6 space-y-2">
+                        {edu.achievements.map((ach, idx) => (
+                          <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-white/70">
+                            <span className="text-primary-500 mt-0.5 text-xs flex-shrink-0">▸</span>
+                            <span>{ach}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Coursework Tags */}
+                    {edu.coursework?.length > 0 && (
+                      <div className="pt-5 border-t border-white/6">
+                        <p className="font-mono text-[10px] tracking-[0.3em] text-white/40 uppercase mb-3 flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 bg-primary-500 rounded-full" />
+                          Core Coursework
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {edu.coursework.map((course, idx) => (
+                            <span
+                              key={idx}
+                              className="edu-chip px-3 py-1.5 text-xs font-mono text-white/70 bg-white/[0.03] border border-white/8 rounded-lg hover:border-primary-500/40 hover:text-primary-300 hover:bg-primary-500/10 transition-all duration-300"
+                            >
+                              {course}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>

@@ -202,10 +202,11 @@ const SplitHoverText = ({ text }) => {
 
 // ── Rotating role labels ──────────────────────────────────────────────
 const ROLES = [
-  "Full-Stack Engineer",
-  "MERN Stack Architect",
-  "React Performance Specialist",
-  "Cloud-Native Builder",
+  "Full-Stack Developer",
+  "Targeting SDE-1 / SDE-2",
+  "SaaS & Distributed Systems",
+  "React & Next.js Specialist",
+  "AWS Cloud & Microservices",
 ];
 
 const Home = () => {

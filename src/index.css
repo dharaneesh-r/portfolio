@@ -1,8 +1,10 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap');
+
 
 /* ─── Global base ─────────────────────────────────────────────────── */
 @layer base {
@@ -113,4 +115,23 @@
 .cursor-trail-item {
     will-change: transform, opacity;
     pointer-events: none;
+}
+
+/* 3D Portrait Animations */
+@keyframes spinSlow {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes floatSoft {
+    0%, 100% { transform: translateY(0px); }
+    50%      { transform: translateY(-6px); }
+}
+
+.animate-spin-slow {
+    animation: spinSlow 8s linear infinite;
+}
+
+.animate-float-soft {
+    animation: floatSoft 4s ease-in-out infinite;
 }

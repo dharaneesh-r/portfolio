@@ -65,6 +65,7 @@ const ScrambleHeading = ({ children, className = "", delay = 0 }) => {
 // ── Tech icon metadata ─────────────────────────────────────────────────
 const TECH_META = {
   "Next.js":    { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg",      color: "#e2e8f0", invert: true },
+  "Next.js 14": { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg",      color: "#e2e8f0", invert: true },
   "Node.js":    { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg",      color: "#68a063" },
   "Express.js": { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg",    color: "#aaa",    invert: true },
   "MongoDB":    { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg",    color: "#4db33d" },
@@ -72,7 +73,15 @@ const TECH_META = {
   "Firebase":   { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg",     color: "#ffca28" },
   "React.js":   { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",        color: "#61dafb" },
   "React":      { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",        color: "#61dafb" },
+  "Redux":      { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redux/redux-original.svg",        color: "#764abc" },
   "TypeScript": { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg", color: "#3178c6" },
+  "Redis":      { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg",        color: "#dc382d" },
+  "Docker":     { icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg",      color: "#2496ed" },
+  "Prometheus": { icon: "https://cdn.simpleicons.org/prometheus/e6522c",                                      color: "#e6522c" },
+  "Puppeteer":  { icon: "https://cdn.simpleicons.org/puppeteer/00d8a2",                                       color: "#00d8a2" },
+  "NATS JetStream": { icon: null,                                                                             color: "#27aae1" },
+  "Razorpay":   { icon: null,                                                                                  color: "#0c2340" },
+  "Vitest":     { icon: "https://cdn.simpleicons.org/vitest/fcc72b",                                          color: "#fcc72b" },
   "GSAP":       { icon: null,                                                                                   color: "#88ce02" },
   "CoinGecko API": { icon: null,                                                                                color: "#8dc63f" },
 };

@@ -45,7 +45,8 @@ const SEO = ({ title, description, keywords, image, url }) => {
           "description": "Portfolio of Dharaneesh R, a Full-Stack Engineer building scalable web experiences with modern technologies.",
           "sameAs": [
             "https://github.com/dharaneesh-r",
-            "https://linkedin.com/in/dharaneesh-r"
+            "https://linkedin.com/in/dharaneeshr",
+            "https://leetcode.com/u/dharaneesh-r"
           ]
         })}
       </script>

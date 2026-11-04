@@ -3,33 +3,36 @@ export const personalInfo = {
     name: "DHARANEESH",
     fullName: "Dharaneesh R",
     role: "Full Stack Developer",
-    tagline: "Building scalable web applications with modern technologies",
+    tagline: "Full-stack developer with 1.6 years of production experience across React, Next.js, Node.js, and AWS",
     email: "dharaneeshr0803@gmail.com",
     phone: "+91 9566865145",
-    location: "India",
-    availability: "Open to new opportunities",
+    location: "Coimbatore, Tamil Nadu, India",
+    availability: "Open to SDE-1 / SDE-2 Roles",
 
     bio: {
-        short: "Full Stack Developer with 1 year of experience specializing in MERN stack, building scalable SaaS platforms and enterprise applications.",
+        short: "Full-stack developer with 1.6 years of production experience across React, Next.js, Node.js, and AWS. Specializing in high-throughput SaaS platforms, real-time tracking consoles, and cloud infrastructure.",
         long: [
-            "Developed and enhanced scalable backend services using Node.js and Express.js for a US-based SaaS platform, implementing role-based access control (RBAC) and secure API authorization.",
-            "Built high-volume CSV bulk rewards processing systems handling 1M+ records with validation, asynchronous processing, and DynamoDB updates.",
-            "Architected workloads for auto-scaling on AWS ECS, ensuring reliability during heavy reward-processing traffic with integrated monitoring via AWS DynamoDB, S3, and CloudWatch.",
-            "Created modular, responsive UI components using React.js, Redux, and Grommet, delivering multiple projects with zero production bug fixes.",
-            "Leveraged event-driven analytics including impressions, clicks, CTR, and dismiss events for comprehensive tracking and insights."
+            "Architected and deployed scalable backend services at Tenext Technologies for US SaaS client Friendbuy, serving 500K+ daily API requests at 99.9% uptime on AWS ECS with 30% reduced response times.",
+            "Engineered high-volume CSV bulk rewards pipeline validating and processing 1M+ records per run with asynchronous background jobs and batched DynamoDB writes, lifting throughput by 40%.",
+            "Built a real-time React dispatch console for Nearle hyperlocal delivery streaming rider GPS over WebSockets through a Go backend, using goroutines and Kalman filtering to resolve 5–15m signal noise into stable tracks.",
+            "Self-hosted OSRM on OpenStreetMap data behind Go microservices to calculate fastest routes in under 100ms at zero per-request cost, replacing Google Directions API with 2–5x lower latency.",
+            "Founder of Scrolla.in (AI Typography Video Ad Platform) using NATS JetStream, Remotion React workers via headless Puppeteer, and intelligent prompt routing across OpenAI, Gemini, and Groq.",
+            "Published 2 open-source npm packages, a verified Firefox DevTools extension on addons.mozilla.org, and hold a 1500+ LeetCode rating."
         ]
     },
 
     highlights: [
-        "1 year of professional development experience",
-        "Full Stack Developer at Nearle Technologies",
-        "Specialized in MERN stack & AWS cloud services",
-        "Built enterprise-grade SaaS platforms",
-        "Expert in scalable backend architecture"
+        "1.6 years of production development experience",
+        "Software Developer at Tenext Technologies (Clients: Friendbuy, Nearle)",
+        "500K+ daily API requests served at 99.9% uptime",
+        "1M+ CSV bulk processing with batched DynamoDB & AWS ECS",
+        "Founder of Scrolla.in (AI Typography Video Platform)",
+        "Shipped 2 npm packages & verified Firefox DevTools extension",
+        "1500+ LeetCode rating (Java Data Structures & Algorithms)"
     ],
 
-    interests: ["Full Stack Development", "Cloud Architecture", "DevOps & CI/CD", "System Design", "Performance Optimization"],
-    currentFocus: "Building scalable microservices and mastering AWS cloud infrastructure",
+    interests: ["Full Stack Development", "Cloud Architecture (AWS)", "Distributed Systems", "Real-Time Systems (WebSockets & Go)", "Developer Tooling", "System Design"],
+    currentFocus: "Targeting SDE-1 and SDE-2 roles in developer tools, SaaS, or data infrastructure",
 
     socialLinks: [
         {
@@ -43,6 +46,12 @@ export const personalInfo = {
             url: "https://linkedin.com/in/dharaneeshr",
             username: "dharaneeshr",
             icon: "FaLinkedin"
+        },
+        {
+            platform: "LeetCode",
+            url: "https://leetcode.com/u/dharaneesh-r",
+            username: "LeetCode 1500+",
+            icon: "SiLeetcode"
         },
         {
             platform: "Email",
